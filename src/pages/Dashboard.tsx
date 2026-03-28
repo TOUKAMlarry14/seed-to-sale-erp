@@ -23,7 +23,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { Badge } from "@/components/ui/badge";
+
 
 const kpis = [
   { label: "CA du mois", value: "12 450 000", suffix: CURRENCY, icon: TrendingUp, trend: "+8.2%", color: "text-primary" },
