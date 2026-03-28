@@ -83,6 +83,7 @@ export const ATTENDANCE_STATUS = {
   PRESENT: "present",
   ABSENT: "absent",
   CONGE: "conge",
+  MISSION: "mission",
 } as const;
 
 export const PRODUCT_CATEGORIES = [
