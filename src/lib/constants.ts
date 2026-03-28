@@ -25,6 +25,7 @@ export const ROLE_LABELS: Record<AppRole, string> = {
 export const ORDER_STATUS = {
   EN_ATTENTE: "en_attente",
   CONFIRME: "confirme",
+  EN_PREPARATION: "en_preparation",
   LIVRE: "livre",
   ANNULE: "annule",
 } as const;
@@ -32,6 +33,7 @@ export const ORDER_STATUS = {
 export const ORDER_STATUS_LABELS: Record<string, string> = {
   en_attente: "En attente",
   confirme: "Confirmé",
+  en_preparation: "En préparation",
   livre: "Livré",
   annule: "Annulé",
 };
