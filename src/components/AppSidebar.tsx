@@ -30,7 +30,10 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r-0">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
-          <img src={logoWhiteSrc} alt="AgroConnect" className={collapsed ? "h-7" : "h-9"} />
+          <div className={`rounded-full bg-white/15 flex items-center justify-center shrink-0 overflow-hidden ${collapsed ? "w-8 h-8" : "w-10 h-10"}`}>
+            <img src={logoWhiteSrc} alt="AgroConnect" className={collapsed ? "h-5" : "h-6"} />
+          </div>
+          {!collapsed && <span className="font-heading font-bold text-sidebar-foreground text-sm">AgroConnect</span>}
         </div>
       </SidebarHeader>
 

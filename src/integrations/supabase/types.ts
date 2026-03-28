@@ -54,6 +54,7 @@ export type Database = {
           email: string | null
           id: string
           name: string
+          notes: string | null
           phone: string | null
           type: string
           updated_at: string
@@ -65,6 +66,7 @@ export type Database = {
           email?: string | null
           id?: string
           name: string
+          notes?: string | null
           phone?: string | null
           type?: string
           updated_at?: string
@@ -76,6 +78,7 @@ export type Database = {
           email?: string | null
           id?: string
           name?: string
+          notes?: string | null
           phone?: string | null
           type?: string
           updated_at?: string
@@ -129,6 +132,7 @@ export type Database = {
       employees: {
         Row: {
           created_at: string
+          department: string | null
           hire_date: string
           id: string
           is_active: boolean
@@ -141,6 +145,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          department?: string | null
           hire_date?: string
           id?: string
           is_active?: boolean
@@ -153,6 +158,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          department?: string | null
           hire_date?: string
           id?: string
           is_active?: boolean
@@ -168,6 +174,7 @@ export type Database = {
       invoices: {
         Row: {
           amount: number
+          amount_paid: number
           client_id: string
           created_at: string
           due_date: string | null
@@ -175,11 +182,13 @@ export type Database = {
           invoice_number: string
           order_id: string | null
           paid_at: string | null
+          payment_mode: string | null
           status: string
           updated_at: string
         }
         Insert: {
           amount?: number
+          amount_paid?: number
           client_id: string
           created_at?: string
           due_date?: string | null
@@ -187,11 +196,13 @@ export type Database = {
           invoice_number: string
           order_id?: string | null
           paid_at?: string | null
+          payment_mode?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
           amount?: number
+          amount_paid?: number
           client_id?: string
           created_at?: string
           due_date?: string | null
@@ -199,6 +210,7 @@ export type Database = {
           invoice_number?: string
           order_id?: string | null
           paid_at?: string | null
+          payment_mode?: string | null
           status?: string
           updated_at?: string
         }
@@ -266,6 +278,7 @@ export type Database = {
           client_id: string
           created_at: string
           created_by: string | null
+          delivery_address: string | null
           id: string
           notes: string | null
           status: string
@@ -276,6 +289,7 @@ export type Database = {
           client_id: string
           created_at?: string
           created_by?: string | null
+          delivery_address?: string | null
           id?: string
           notes?: string | null
           status?: string
@@ -286,6 +300,7 @@ export type Database = {
           client_id?: string
           created_at?: string
           created_by?: string | null
+          delivery_address?: string | null
           id?: string
           notes?: string | null
           status?: string
@@ -355,6 +370,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_active: boolean
           name: string
           price_buy: number
           price_sell: number
@@ -368,6 +384,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_active?: boolean
           name: string
           price_buy?: number
           price_sell?: number
@@ -381,6 +398,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_active?: boolean
           name?: string
           price_buy?: number
           price_sell?: number
@@ -423,6 +441,7 @@ export type Database = {
           product_id: string
           quantity: number
           reason: string | null
+          supplier_id: string | null
           type: string
         }
         Insert: {
@@ -432,6 +451,7 @@ export type Database = {
           product_id: string
           quantity: number
           reason?: string | null
+          supplier_id?: string | null
           type: string
         }
         Update: {
@@ -441,6 +461,7 @@ export type Database = {
           product_id?: string
           quantity?: number
           reason?: string | null
+          supplier_id?: string | null
           type?: string
         }
         Relationships: [
@@ -449,6 +470,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
             referencedColumns: ["id"]
           },
         ]
