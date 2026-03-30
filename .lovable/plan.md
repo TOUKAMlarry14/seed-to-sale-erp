@@ -1,193 +1,235 @@
 
 
-# AgroConnect ERP — Implémentation Complète des 4 Modules
+# AgroConnect ERP — Refonte Majeure (14 Chantiers)
 
-Ce plan couvre l'implémentation intégrale des 4 modules, les corrections visuelles demandées, la création de 30 comptes utilisateurs, et le pré-remplissage massif de données.
-
----
-
-## Phase A — Corrections visuelles immédiates
-
-### A1. Sidebar verte (pas bleue)
-Modifier `src/index.css` : remplacer les variables `--sidebar-background`, `--sidebar-accent`, `--sidebar-border`, `--sidebar-ring` par des teintes vertes basées sur `#1B6B3A`.
-
-### A2. Logo en cercle
-Modifier `src/components/AppSidebar.tsx` : entourer le logo dans un `div` rond (`rounded-full`, `w-10 h-10`, `bg-white/10`, `overflow-hidden`, centré).
+Ce plan couvre l'ensemble des 14 points du cahier des charges. L'implémentation sera séquencée en phases prioritaires.
 
 ---
 
-## Phase B — Dashboards différenciés par rôle
+## Phase 1 — Authentification, Splash Screen & Login Refonte
 
-### B1. Dashboard principal (`/`)
-Le composant `Dashboard.tsx` devient un routeur conditionnel basé sur `roles` :
-- **admin** → `AdminDashboard` (KPIs globaux des 4 modules, graphiques CA/dépenses/commandes, alertes)
-- **commercial** → `CommercialDashboard` (commandes du jour, top produits vendus, top clients, factures impayées)
-- **logistique** → `LogistiqueDashboard` (stock en alerte, livraisons du jour, entrées de stock récentes, taux livraison)
-- **financier** → `FinancierDashboard` (solde trésorerie, CA vs mois précédent, dépenses par catégorie, factures impayées)
-- **rh** → `RHDashboard` (employés présents, congés en cours, masse salariale, taux de présence)
-- **livreur** → `LivreurDashboard` (ses livraisons du jour uniquement, statut à mettre à jour)
+### 1A. Splash Screen (4s animation)
+- Nouveau composant `src/components/SplashScreen.tsx` avec animation CSS (logo pulsant/3D rotate + fade)
+- Intégré dans `App.tsx` : affiché 4s avant de monter le reste de l'app
+- Animation keyframes dans `index.css`
 
-Chaque dashboard est un composant séparé dans `src/components/dashboards/`.
+### 1B. Login Split-Screen
+- Refonte `src/pages/Login.tsx` : layout `grid grid-cols-2`
+- Gauche : formulaire login/register/forgot (existant, recentré)
+- Droite : hero image plein cadre (image AI-generated d'un bureau camerounais avec ~9 collaborateurs, stockée dans `src/assets/`)
+- Responsive : sur mobile, hero masqué
 
----
-
-## Phase C — Module 1 : Gestion Commerciale
-
-### C1. Catalogue (`src/pages/modules/Catalogue.tsx`)
-- Table avec colonnes : nom, catégorie, unité, prix achat/vente, stock, alerte stock min
-- Filtres : catégorie, stock disponible, recherche par nom
-- Dialog CRUD (ajouter/modifier) avec formulaire validé
-- Badge alerte si `stock_qty < stock_min`
-- Archivage (champ `is_active` à ajouter via migration)
-
-### C2. Clients (`src/pages/modules/Clients.tsx`)
-- Table : nom, type, téléphone, email, solde/crédit
-- Recherche par nom/téléphone
-- Dialog CRUD fiche client
-- Historique commandes dans un drawer/dialog détail
-- Types client étendus : Particulier, Revendeur, Restaurateur, Grossiste
-
-### C3. Commandes (`src/pages/modules/Commandes.tsx`)
-- Table filtrée par statut/date/client
-- Création en étapes : sélection client → ajout produits/quantités → récapitulatif → validation
-- Statuts : en_attente → confirme → en_preparation → livre → annule (migration pour ajouter `en_preparation`)
-- Calcul auto total, modification/annulation tant que non expédiée
-- Lien vers création livraison automatique
-
-### C4. Factures (`src/pages/modules/Factures.tsx`)
-- Table filtrée par statut/client/période
-- Génération auto à la validation commande
-- Enregistrement paiement (montant, mode : cash/Orange Money/MTN MoMo)
-- Paiements partiels, mise à jour solde client
-- Alerte visuelle factures impayées > 7 jours
+### 1C. Onboarding Tour (Product Tour)
+- Installer `react-joyride` (ou implémentation custom avec Dialog)
+- Composant `src/components/OnboardingTour.tsx` : 5-6 étapes guidées (dashboard, sidebar modules, chatbot)
+- Déclenché au premier login via flag `localStorage` ou profil Supabase
+- Bouton "Relancer la visite" dans Paramètres
 
 ---
 
-## Phase D — Module 2 : Stocks & Logistique
+## Phase 2 — Chatbot IA (FAB Global)
 
-### D1. Inventaire (`src/pages/modules/Inventaire.tsx`)
-- Vue stock temps réel par produit avec alertes visuelles
-- Formulaire entrée de stock (fournisseur, quantité, date, prix achat)
-- Sortie de stock manuelle (pertes, dons, consommation)
-- Journal mouvements avec filtres date/type/produit
+### 2A. Edge Function backend
+- `supabase/functions/chat/index.ts` : proxy vers Lovable AI Gateway
+- System prompt contextualisé AgroConnect (présentation entreprise + aide ERP)
+- Streaming SSE
 
-### D2. Fournisseurs (`src/pages/modules/Fournisseurs.tsx`)
-- Table CRUD fournisseurs
-- Historique achats par fournisseur
-
-### D3. Livraisons (`src/pages/modules/Livraisons.tsx`)
-- Table avec statut, livreur, date prévue
-- Assignation livreur (filtré par employés rôle livreur)
-- Statuts : en_attente → en_cours → livre → echoue
-- Vue livreur : uniquement ses livraisons, bouton confirmer livraison
+### 2B. Frontend
+- `src/components/ChatbotFAB.tsx` : bouton flottant vert (bas-droite, z-50)
+- Icône : Headphones/HeadsetMic blanc
+- Au clic : slide-over panel avec interface chat (messages, input, markdown rendering via `react-markdown`)
+- Intégré dans `AppLayout.tsx` (persistant sur toutes les pages)
 
 ---
 
-## Phase E — Module 3 : Finance
+## Phase 3 — Notifications Bell & Confirmation Modals
 
-### E1. Transactions (`src/pages/modules/Transactions.tsx`)
-- Journal chronologique recettes/dépenses
-- Formulaire ajout avec catégorie, montant, mode paiement, note
-- Filtres par type/catégorie/période
-- Solde trésorerie temps réel en haut
+### 3A. Notifications Popover
+- Modifier `AppLayout.tsx` : remplacer le bouton Bell statique par un Popover Shadcn
+- Contenu : liste d'alertes dynamiques (stocks bas, factures impayées >7j, livraisons en retard)
+- Chaque alerte cliquable → navigation React Router vers la page concernée
+- Suppression d'alerte au clic (state local ou table `notifications`)
 
-### E2. Reporting (`src/pages/modules/Reporting.tsx`)
-- Compte de résultat simplifié (recettes - dépenses par mois/trimestre)
-- Graphique CA mensuel avec tendance
-- Graphique dépenses par catégorie (camembert)
-- Liste factures impayées avec ancienneté
-
----
-
-## Phase F — Module 4 : RH
-
-### F1. Employés (`src/pages/modules/Employes.tsx`)
-- Table CRUD avec recherche/filtres
-- Archivage (is_active) sans suppression
-- Formulaire complet : nom, poste, département, téléphone, date embauche, salaire brut
-
-### F2. Présences (`src/pages/modules/Presences.tsx`)
-- Pointage quotidien : liste employés actifs avec boutons Présent/Absent/Congé/Mission
-- Vue calendrier mensuelle par employé
-- Statut `mission` à ajouter via migration
-
-### F3. Paie (`src/pages/modules/Paie.tsx`)
-- Calcul auto : Net = Brut - CNPS (2.8%) - Impôt sur salaire
-- Génération fiche de paie par employé/mois
-- Historique fiches par employé
-- Masse salariale totale du mois
+### 3B. Confirmation Modals
+- Composant `src/components/ConfirmDialog.tsx` (AlertDialog Shadcn)
+- Wrapper toutes les actions destructives : suppression, annulation commande, archivage
+- Appliqué à : Employés, Commandes, Catalogue, Fournisseurs, Inventaire, Factures
 
 ---
 
-## Phase G — Migrations DB nécessaires
+## Phase 4 — i18n & Dark/Light Mode
 
-Une migration SQL pour :
-1. Ajouter `is_active` boolean à `products` (défaut `true`)
-2. Ajouter `notes` text à `clients`
-3. Ajouter statut `en_preparation` aux commandes (colonne text, pas d'enum donc OK)
-4. Ajouter `payment_mode` text à `invoices` (cash, orange_money, mtn_momo, virement)
-5. Ajouter `amount_paid` numeric à `invoices` (défaut 0, pour paiements partiels)
-6. Ajouter `department` text à `employees`
-7. Étendre `attendances.status` pour supporter `mission`
-8. Ajouter `supplier_id` à `stock_movements` (nullable, ref suppliers)
-9. Ajouter `delivery_address` text à `orders`
+### 4A. Dark Mode
+- Déjà préparé dans `index.css` (`.dark` existe)
+- `src/contexts/ThemeContext.tsx` : ThemeProvider avec toggle `dark` class sur `<html>`
+- Toggle dans le header (AppLayout) et dans Paramètres
 
----
-
-## Phase H — Données de démonstration
-
-Insertion massive via l'outil insert :
-- **25 produits** réalistes (riz, huile, sucre, farine, etc.) avec stocks variés
-- **15 clients** (restaurants, supermarchés, grossistes, particuliers)
-- **8 fournisseurs** camerounais réalistes
-- **30+ commandes** avec order_items, statuts variés
-- **20+ factures** (payées, impayées, partielles)
-- **12 employés** liés aux comptes utilisateurs
-- **50+ mouvements de stock**
-- **30+ transactions** financières (recettes/dépenses)
-- **Présences** sur le mois en cours
-- **Fiches de paie** pour les 2 derniers mois
+### 4B. i18n (FR/EN)
+- `src/contexts/I18nContext.tsx` avec dictionnaire FR/EN
+- Fichiers `src/i18n/fr.ts` et `src/i18n/en.ts` couvrant labels, boutons, messages
+- Hook `useTranslation()` retournant `t(key)`
+- Toggle langue dans header et Paramètres
 
 ---
 
-## Phase I — Comptes utilisateurs (30 comptes)
+## Phase 5 — Module Présences (Corrections)
 
-5 comptes par rôle, créés via l'API Auth + insertion dans `user_roles` :
+### 5A. Modales Mission/Congé
+- Clic sur "Mission" ou "Congé" → ouvre Dialog avec DatePicker (début/fin) + champ motif
+- Migration DB : ajouter colonnes `start_date`, `end_date`, `reason` à `attendances`
 
-| Rôle | Emails | Mot de passe |
-|------|--------|-------------|
-| admin (×5) | admin1@agroconnect.cm ... admin5@agroconnect.cm | Admin@2026 |
-| commercial (×5) | commercial1@agroconnect.cm ... | Commercial@2026 |
-| logistique (×5) | logistique1@agroconnect.cm ... | Logistique@2026 |
-| financier (×5) | financier1@agroconnect.cm ... | Financier@2026 |
-| rh (×5) | rh1@agroconnect.cm ... | RH@2026 |
-| livreur (×5) | livreur1@agroconnect.cm ... | Livreur@2026 |
+### 5B. Toggle annulation
+- Second clic sur statut actif → supprime l'entrée attendance (rollback)
+- Bouton revient à état neutre
 
----
-
-## Phase J — Hooks & utilitaires partagés
-
-- `src/hooks/useProducts.ts` — CRUD produits avec React Query
-- `src/hooks/useClients.ts` — CRUD clients
-- `src/hooks/useOrders.ts` — CRUD commandes + order_items
-- `src/hooks/useInvoices.ts` — CRUD factures
-- `src/hooks/useStock.ts` — mouvements stock
-- `src/hooks/useSuppliers.ts` — CRUD fournisseurs
-- `src/hooks/useDeliveries.ts` — CRUD livraisons
-- `src/hooks/useTransactions.ts` — CRUD transactions
-- `src/hooks/useEmployees.ts` — CRUD employés
-- `src/hooks/useAttendances.ts` — présences
-- `src/hooks/usePayslips.ts` — fiches de paie
-
-Chaque hook utilise `@tanstack/react-query` avec `useQuery` / `useMutation` et toast de feedback.
+### 5C. Filtres par service + Export
+- Ajout filtre multicritères par département
+- Bouton "Imprimer Fiche" : génère PDF/CSV structuré (Présents, Absents, Congés, Missions) groupé par service
 
 ---
 
-## Détails techniques
+## Phase 6 — Module Employés (Refonte)
 
-- **Composants réutilisables** : `DataTable` (pagination 20 lignes, tri, recherche), `FormDialog`, `ConfirmDialog`, `StatusBadge`
-- **Toasts** en français pour chaque action CRUD
-- **Spinners** pendant les chargements Supabase
-- **Validation formulaires** avec React Hook Form + Zod
-- **Ordre d'implémentation** : G (migrations) → J (hooks) → A-B (visuels/dashboards) → C-D-E-F (modules) → H-I (données/comptes)
+### 6A. Hard Delete
+- Remplacer "Archiver" par "Supprimer" avec ConfirmDialog
+- Suppression définitive en DB
+
+### 6B. Formulaire enrichi
+- Ajouter champ Email (obligatoire à la création)
+- Ajouter input file pour photo/avatar (Supabase Storage bucket `avatars`)
+- Migration DB : ajouter `email` text et `avatar_url` text à `employees`
+
+### 6C. Bonus salariaux
+- Migration DB : ajouter `bonus_amount` numeric et `bonus_reason` text à `employees` (ou table séparée)
+- UI : icône "+" badge jaune à côté du salaire, Tooltip au survol
+- Intégré dans calcul paie
+
+### 6D. Export PDF/CSV + filtre service
+- Barre filtre par département
+- Bouton export avec filtres actifs
+
+---
+
+## Phase 7 — Reporting Financier (Enrichissement)
+
+- Ajouter KPIs : flux trésorerie, historique paies, dates versement
+- Bouton export global PDF/CSV en haut à droite
+- Graphiques avancés supplémentaires (Recharts)
+
+---
+
+## Phase 8 — Transactions, Livraisons, Fournisseurs
+
+### 8A. Transactions éditables
+- Ajouter action "Modifier" avec Dialog de mise à jour
+- Hook `useUpdateTransaction`
+
+### 8B. Livraisons (Bug Fix)
+- Déboguer le formulaire de validation (inspecter payload et foreign keys)
+- S'assurer que `driver_id` est un `user_id` valide ou un `employee_id`
+
+### 8C. Fournisseurs enrichi
+- Filtre par ville/adresse
+- Action suppression (Hard Delete avec ConfirmDialog)
+
+---
+
+## Phase 9 — Inventaire & Catalogue
+
+### 9A. Inventaire
+- Suppression de produit (via `is_active = false` ou hard delete)
+- Filtres par catégorie
+
+### 9B. Catalogue
+- Bouton suppression par ligne
+- Fonctionnalité "Ajouter une catégorie" (stockée dans une table ou constantes dynamiques)
+
+### 9C. Export ciblé (Inventaire, Catalogue, Clients)
+- Ajouter checkboxes au DataTable (modification du composant `DataTable.tsx`)
+- Export PDF/CSV : soit toute la liste filtrée, soit les lignes sélectionnées
+
+---
+
+## Phase 10 — Facturation
+
+### 10A. Générateur de facture
+- Bouton "Générer Facture" → formulaire détaillé
+- À la soumission : génération PDF brandé (logo AgroConnect, layout standard)
+- Téléchargement automatique
+
+### 10B. Bug Fix commande "Préparer"
+- Déboguer l'erreur de soumission lors du passage confirme → en_preparation
+
+### 10C. CRUD factures
+- Actions : modifier, supprimer, réimprimer dans le DataTable
+
+---
+
+## Phase 11 — Page Information (Landing interne)
+
+- Nouvelle route `/information`
+- Page de présentation AgroConnect : histoire, mission, fonctionnement
+- UI : animations scroll (CSS animations ou framer-motion si installé), Bento Grid, Cards interactives
+- Ajout dans la navigation sidebar
+
+---
+
+## Phase 12 — Page Paramètres (Refonte complète)
+
+- Tabs Shadcn : Profil & Sécurité, Préférences, Notifications, Support
+- **Profil** : modification mot de passe, infos personnelles
+- **Préférences** : toggles Dark Mode + Langue
+- **Notifications** : activer/désactiver alertes par type
+- **Support** : FAQ (Accordions), bouton relancer Product Tour, contact support
+
+---
+
+## Phase 13 — Vue détaillée employé + TechAdmin
+
+### 13A. Profil employé
+- Route `/employes/:id`
+- Dashboard individuel : infos, KPIs (taux présence, congés, historique salaires)
+- Bouton "Imprimer le dossier" → PDF A4 avec logo
+
+### 13B. Rôle TechAdmin
+- Ajouter `techadmin` à l'enum `app_role`
+- Créer compte `techadmin@agroconnect.cm` / `AdminTech2026!`
+- Migration DB : table `activity_logs` (user_id, action, entity_type, entity_id, details, created_at)
+
+### 13C. Module Logs Système
+- Route `/logs` (visible uniquement pour techadmin)
+- DataTable avec filtres date/type action/utilisateur
+- Export PDF/CSV par employé
+
+---
+
+## Phase 14 — Seeding massif (1 an de données)
+
+- Script d'insertion massive via l'outil insert Supabase
+- 12 mois de transactions, commandes, factures, mouvements stock, présences, fiches de paie
+- Données cohérentes (foreign keys valides, pas de null sur colonnes requises)
+- ~500+ lignes de données réalistes camerounaises
+- Création des 30 comptes utilisateurs si pas encore fait
+
+---
+
+## Migrations DB nécessaires
+
+1. `employees` : ajouter `email` text, `avatar_url` text, `bonus_amount` numeric default 0, `bonus_reason` text
+2. `attendances` : ajouter `start_date` date, `end_date` date, `reason` text
+3. `activity_logs` : nouvelle table (id, user_id, action text, entity_type text, entity_id uuid, details jsonb, created_at)
+4. `app_role` enum : ajouter valeur `techadmin`
+5. Storage bucket `avatars` (public)
+
+## Ordre d'implémentation recommandé
+
+1. Migrations DB + Splash/Login (Phases 1, 6B migrations)
+2. Dark Mode + i18n (Phase 4)
+3. Chatbot IA (Phase 2)
+4. Notifications + Confirm Dialogs (Phase 3)
+5. Modules métier corrections (Phases 5-10)
+6. Paramètres + Information (Phases 11-12)
+7. TechAdmin + Logs (Phase 13)
+8. Seeding massif (Phase 14)
+9. Onboarding Tour (Phase 1C — après tout le reste)
 
