@@ -124,14 +124,14 @@ export function Employes() {
 
       <DataTable data={filtered} searchKey="name" columns={[
         { key: "name", label: "Nom" },
-        { key: "email", label: "Email", render: (r) => r.email || "—" },
+        { key: "email", label: "Email", render: (r) => (r as any).email || "—" },
         { key: "role", label: "Poste", render: (r) => <Badge variant="outline" className="text-[10px]">{ROLE_LABELS[r.role] || r.role}</Badge> },
         { key: "department", label: "Département" },
         { key: "phone", label: "Téléphone" },
         { key: "salary", label: `Salaire (${CURRENCY})`, render: (r) => (
           <div className="flex items-center gap-1">
             <span>{Number(r.salary).toLocaleString()}</span>
-            {r.bonus_amount > 0 && (
+            {(r as any).bonus_amount > 0 && (
               <Tooltip>
                 <TooltipTrigger>
                   <Badge className="text-[8px] bg-warning/15 text-warning border-warning/30 px-1" variant="outline">
@@ -139,8 +139,8 @@ export function Employes() {
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Bonus: {Number(r.bonus_amount).toLocaleString()} {CURRENCY}</p>
-                  {r.bonus_reason && <p className="text-xs text-muted-foreground">{r.bonus_reason}</p>}
+                  <p>Bonus: {Number((r as any).bonus_amount).toLocaleString()} {CURRENCY}</p>
+                  {(r as any).bonus_reason && <p className="text-xs text-muted-foreground">{(r as any).bonus_reason}</p>}
                 </TooltipContent>
               </Tooltip>
             )}
