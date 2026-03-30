@@ -112,3 +112,69 @@
     font-family: 'Space Grotesk', sans-serif;
   }
 }
+
+/* Splash Screen Animations */
+.splash-logo-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash-logo-ring {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid hsl(148, 58%, 26%);
+  border-top-color: transparent;
+  animation: splash-spin 1.5s linear infinite;
+}
+
+.splash-logo {
+  animation: splash-pulse 2s ease-in-out infinite;
+}
+
+.splash-text {
+  animation: splash-fade-up 0.8s ease-out 0.5s both;
+}
+
+.splash-text-delay {
+  animation: splash-fade-up 0.8s ease-out 1s both;
+}
+
+.splash-loader {
+  width: 200px;
+  height: 3px;
+  background: hsl(var(--muted));
+  border-radius: 3px;
+  overflow: hidden;
+  animation: splash-fade-up 0.8s ease-out 1.5s both;
+}
+
+.splash-loader-bar {
+  height: 100%;
+  width: 40%;
+  background: hsl(148, 58%, 26%);
+  border-radius: 3px;
+  animation: splash-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes splash-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes splash-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes splash-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes splash-loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
