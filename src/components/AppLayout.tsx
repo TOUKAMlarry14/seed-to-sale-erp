@@ -3,11 +3,18 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useAuth } from "@/hooks/useAuth";
 import { ROLE_LABELS } from "@/lib/constants";
-import { Bell } from "lucide-react";
+import { NotificationsPopover } from "@/components/NotificationsPopover";
+import { ChatbotFAB } from "@/components/ChatbotFAB";
+import { OnboardingTour } from "@/components/OnboardingTour";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from "@/contexts/I18nContext";
 import { Button } from "@/components/ui/button";
+import { Moon, Sun, Globe } from "lucide-react";
 
 export function AppLayout() {
   const { profile, roles } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { lang, setLang } = useTranslation();
 
   return (
     <SidebarProvider>
@@ -21,14 +28,15 @@ export function AppLayout() {
                 AgroConnect ERP
               </h1>
             </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-4 w-4" />
-                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-destructive rounded-full text-[8px] text-destructive-foreground flex items-center justify-center">
-                  3
-                </span>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={toggleTheme} title={theme === "dark" ? "Mode clair" : "Mode sombre"}>
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
-              <div className="text-right hidden sm:block">
+              <Button variant="ghost" size="icon" onClick={() => setLang(lang === "fr" ? "en" : "fr")} title={lang === "fr" ? "Switch to English" : "Passer en Français"}>
+                <Globe className="h-4 w-4" />
+              </Button>
+              <NotificationsPopover />
+              <div className="text-right hidden sm:block ml-2">
                 <p className="text-xs font-medium">{profile?.full_name || "Utilisateur"}</p>
                 <p className="text-[10px] text-muted-foreground">
                   {roles.map((r) => ROLE_LABELS[r]).join(", ") || "—"}
@@ -41,6 +49,8 @@ export function AppLayout() {
           </main>
         </div>
       </div>
+      <ChatbotFAB />
+      <OnboardingTour />
     </SidebarProvider>
   );
 }

@@ -9,17 +9,19 @@ export const ROLES = {
   FINANCIER: "financier",
   RH: "rh",
   LIVREUR: "livreur",
+  TECHADMIN: "techadmin",
 } as const;
 
 export type AppRole = (typeof ROLES)[keyof typeof ROLES];
 
-export const ROLE_LABELS: Record<AppRole, string> = {
+export const ROLE_LABELS: Record<string, string> = {
   admin: "Administrateur",
   commercial: "Commercial",
   logistique: "Logistique",
   financier: "Financier",
   rh: "Ressources Humaines",
   livreur: "Livreur",
+  techadmin: "Tech Admin",
 };
 
 export const ORDER_STATUS = {
