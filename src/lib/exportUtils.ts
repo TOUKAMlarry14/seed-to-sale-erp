@@ -185,7 +185,7 @@ function buildPDF(pages: string[], width: number, height: number): Uint8Array {
   pdf += xref;
   pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
   
-  return encoder.encode(pdf);
+  return new Uint8Array(encoder.encode(pdf)) as unknown as BlobPart;
 }
 
 function downloadBlob(blob: Blob, filename: string) {
