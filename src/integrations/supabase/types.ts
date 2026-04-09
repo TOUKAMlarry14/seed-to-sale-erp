@@ -52,21 +52,30 @@ export type Database = {
           created_at: string
           date: string
           employee_id: string
+          end_date: string | null
           id: string
+          reason: string | null
+          start_date: string | null
           status: string
         }
         Insert: {
           created_at?: string
           date?: string
           employee_id: string
+          end_date?: string | null
           id?: string
+          reason?: string | null
+          start_date?: string | null
           status?: string
         }
         Update: {
           created_at?: string
           date?: string
           employee_id?: string
+          end_date?: string | null
           id?: string
+          reason?: string | null
+          start_date?: string | null
           status?: string
         }
         Relationships: [
@@ -86,6 +95,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          image_url: string | null
           name: string
           notes: string | null
           phone: string | null
@@ -98,6 +108,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          image_url?: string | null
           name: string
           notes?: string | null
           phone?: string | null
@@ -110,6 +121,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          image_url?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
@@ -154,6 +166,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "deliveries_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "deliveries_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
@@ -164,8 +183,13 @@ export type Database = {
       }
       employees: {
         Row: {
+          avatar_url: string | null
+          bonus_amount: number | null
+          bonus_expiry: string | null
+          bonus_reason: string | null
           created_at: string
           department: string | null
+          email: string | null
           hire_date: string
           id: string
           is_active: boolean
@@ -173,12 +197,20 @@ export type Database = {
           phone: string | null
           role: string
           salary: number
+          status: string | null
+          termination_date: string | null
+          termination_reason: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          avatar_url?: string | null
+          bonus_amount?: number | null
+          bonus_expiry?: string | null
+          bonus_reason?: string | null
           created_at?: string
           department?: string | null
+          email?: string | null
           hire_date?: string
           id?: string
           is_active?: boolean
@@ -186,12 +218,20 @@ export type Database = {
           phone?: string | null
           role?: string
           salary?: number
+          status?: string | null
+          termination_date?: string | null
+          termination_reason?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          avatar_url?: string | null
+          bonus_amount?: number | null
+          bonus_expiry?: string | null
+          bonus_reason?: string | null
           created_at?: string
           department?: string | null
+          email?: string | null
           hire_date?: string
           id?: string
           is_active?: boolean
@@ -199,6 +239,9 @@ export type Database = {
           phone?: string | null
           role?: string
           salary?: number
+          status?: string | null
+          termination_date?: string | null
+          termination_reason?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -263,6 +306,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          route: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          route?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          route?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -397,12 +473,31 @@ export type Database = {
           },
         ]
       }
+      product_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
           created_at: string
           description: string | null
           id: string
+          image_url: string | null
           is_active: boolean
           name: string
           price_buy: number
@@ -417,6 +512,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           name: string
           price_buy?: number
@@ -431,6 +527,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           name?: string
           price_buy?: number
@@ -541,6 +638,51 @@ export type Database = {
           name?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      todos: {
+        Row: {
+          assigned_by: string | null
+          assigned_to: string | null
+          created_at: string
+          department: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          department?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          department?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

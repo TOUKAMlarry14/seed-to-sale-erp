@@ -3,19 +3,11 @@ import { getFilteredNavigation } from "@/lib/navigation";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { LogOut, ChevronRight } from "lucide-react";
-import logoWhiteSrc from "@/assets/logo_AgroConnect_blanc.svg";
+import logoWhiteSrc from "@/assets/logo_agroconnect_blanc.png";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarFooter,
-  SidebarHeader,
-  useSidebar,
+  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
+  SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+  SidebarFooter, SidebarHeader, useSidebar,
 } from "@/components/ui/sidebar";
 import { ROLE_LABELS } from "@/lib/constants";
 
@@ -31,7 +23,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
           <div className={`rounded-full bg-white/15 flex items-center justify-center shrink-0 overflow-hidden ${collapsed ? "w-8 h-8" : "w-10 h-10"}`}>
-            <img src={logoWhiteSrc} alt="AgroConnect" className={collapsed ? "h-5" : "h-6"} />
+            <img src={logoWhiteSrc} alt="AgroConnect" className={`object-contain ${collapsed ? "h-6 w-6" : "h-7 w-7"}`} />
           </div>
           {!collapsed && <span className="font-heading font-bold text-sidebar-foreground text-sm">AgroConnect</span>}
         </div>

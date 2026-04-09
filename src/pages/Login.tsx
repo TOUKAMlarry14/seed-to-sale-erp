@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import logoSrc from "@/assets/logo_AgroConnect.svg";
+import logoSrc from "@/assets/logo_agroconnect.png";
 import heroSrc from "@/assets/hero_login.jpg";
 
 type Mode = "login" | "signup" | "forgot";
@@ -82,8 +82,8 @@ const Login = () => {
       <div className="flex items-center justify-center p-6 lg:p-12 bg-background">
         <div className="w-full max-w-md space-y-8">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center">
-              <img src={logoSrc} alt="AgroConnect" className="h-10" />
+            <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center overflow-hidden">
+              <img src={logoSrc} alt="AgroConnect" className="h-12 w-12 object-contain" />
             </div>
             <p className="text-muted-foreground text-sm text-center">Solution ERP pour la distribution agroalimentaire</p>
           </div>

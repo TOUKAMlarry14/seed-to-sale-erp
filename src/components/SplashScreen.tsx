@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import logoSrc from "@/assets/logo_AgroConnect.svg";
+import logoSrc from "@/assets/logo_agroconnect.png";
 
 export function SplashScreen({ onFinished }: { onFinished: () => void }) {
   const [fadeOut, setFadeOut] = useState(false);
@@ -11,10 +11,10 @@ export function SplashScreen({ onFinished }: { onFinished: () => void }) {
   }, [onFinished]);
 
   return (
-    <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background transition-opacity duration-700 ${fadeOut ? "opacity-0" : "opacity-100"}`}>
+    <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background transition-opacity duration-700 ${fadeOut ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
       <div className="splash-logo-container">
         <div className="splash-logo-ring" />
-        <img src={logoSrc} alt="AgroConnect" className="splash-logo h-20 relative z-10" />
+        <img src={logoSrc} alt="AgroConnect" className="splash-logo h-20 w-20 object-contain relative z-10 rounded-full" />
       </div>
       <h1 className="mt-6 text-2xl font-heading font-bold text-foreground splash-text">AgroConnect</h1>
       <p className="mt-2 text-sm text-muted-foreground splash-text-delay">Solution ERP — Distribution Agroalimentaire</p>

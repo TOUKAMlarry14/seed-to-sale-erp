@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ReactMarkdown from "react-markdown";
-import { supabase } from "@/integrations/supabase/client";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -45,7 +44,8 @@ export function ChatbotFAB() {
       });
 
       if (!resp.ok || !resp.body) {
-        throw new Error("Failed");
+        const errData = await resp.json().catch(() => null);
+        throw new Error(errData?.error || "Erreur du serveur");
       }
 
       const reader = resp.body.getReader();
@@ -85,26 +85,26 @@ export function ChatbotFAB() {
           } catch { /* partial */ }
         }
       }
-    } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "Désolé, une erreur est survenue. Réessayez plus tard." }]);
+    } catch (err: any) {
+      setMessages(prev => [...prev, { role: "assistant", content: `Désolé, une erreur est survenue: ${err.message || "Réessayez plus tard."}` }]);
     }
     setIsLoading(false);
   };
 
   return (
     <>
-      {/* FAB Button */}
+      {/* FAB Button - positioned bottom-left to avoid pagination conflicts */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-success text-success-foreground shadow-lg hover:shadow-xl transition-all flex items-center justify-center hover:scale-105"
+        className="fixed bottom-6 left-20 z-50 w-12 h-12 rounded-full bg-success text-success-foreground shadow-lg hover:shadow-xl transition-all flex items-center justify-center hover:scale-105"
         aria-label="Ouvrir le chatbot"
       >
-        {isOpen ? <X className="h-6 w-6" /> : <Headphones className="h-6 w-6" />}
+        {isOpen ? <X className="h-5 w-5" /> : <Headphones className="h-5 w-5" />}
       </button>
 
       {/* Chat Panel */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 z-50 w-[380px] h-[500px] flex flex-col shadow-2xl border">
+        <Card className="fixed bottom-20 left-20 z-50 w-[380px] h-[500px] flex flex-col shadow-2xl border">
           {/* Header */}
           <div className="p-3 border-b bg-success/10 rounded-t-lg">
             <div className="flex items-center gap-2">

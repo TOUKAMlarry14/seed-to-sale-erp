@@ -26,18 +26,18 @@ export const ROLE_LABELS: Record<string, string> = {
 
 export const ORDER_STATUS = {
   EN_ATTENTE: "en_attente",
-  CONFIRME: "confirme",
+  CONFIRMEE: "confirmee",
   EN_PREPARATION: "en_preparation",
-  LIVRE: "livre",
-  ANNULE: "annule",
+  LIVREE: "livree",
+  ANNULEE: "annulee",
 } as const;
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {
   en_attente: "En attente",
-  confirme: "Confirmé",
+  confirmee: "Confirmée",
   en_preparation: "En préparation",
-  livre: "Livré",
-  annule: "Annulé",
+  livree: "Livrée",
+  annulee: "Annulée",
 };
 
 export const INVOICE_STATUS = {
@@ -47,9 +47,9 @@ export const INVOICE_STATUS = {
 } as const;
 
 export const INVOICE_STATUS_LABELS: Record<string, string> = {
-  paye: "Payé",
-  impaye: "Impayé",
-  partiel: "Partiel",
+  paye: "Payée",
+  impaye: "Impayée",
+  partiel: "Partielle",
 };
 
 export const STOCK_MOVEMENT_TYPES = {
@@ -60,15 +60,15 @@ export const STOCK_MOVEMENT_TYPES = {
 export const DELIVERY_STATUS = {
   EN_ATTENTE: "en_attente",
   EN_COURS: "en_cours",
-  LIVRE: "livre",
-  ECHOUE: "echoue",
+  LIVREE: "livree",
+  ECHOUEE: "echouee",
 } as const;
 
 export const DELIVERY_STATUS_LABELS: Record<string, string> = {
   en_attente: "En attente",
   en_cours: "En cours",
-  livre: "Livré",
-  echoue: "Échoué",
+  livree: "Livrée",
+  echouee: "Échouée",
 };
 
 export const TRANSACTION_TYPES = {
@@ -126,5 +126,4 @@ export const TRANSACTION_CATEGORIES = [
   "Autres",
 ] as const;
 
-// CNPS rate in Cameroon
 export const CNPS_RATE = 0.028;

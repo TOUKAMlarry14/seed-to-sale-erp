@@ -18,15 +18,12 @@ export function useAttendances(date?: string) {
 export function useUpsertAttendance() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (a: { employee_id: string; date: string; status: string }) => {
-      const { data, error } = await supabase.from("attendances").upsert(a, { onConflict: "employee_id,date" as any }).select().single();
-      if (error) {
-        // If upsert fails due to no unique constraint, try delete + insert
-        await supabase.from("attendances").delete().eq("employee_id", a.employee_id).eq("date", a.date);
-        const { data: d2, error: e2 } = await supabase.from("attendances").insert(a).select().single();
-        if (e2) throw e2;
-        return d2;
-      }
+    mutationFn: async (a: { employee_id: string; date: string; status: string; start_date?: string; end_date?: string; reason?: string }) => {
+      // Delete existing attendance for this employee+date first
+      await supabase.from("attendances").delete().eq("employee_id", a.employee_id).eq("date", a.date);
+      // Insert new
+      const { data, error } = await supabase.from("attendances").insert(a as any).select().single();
+      if (error) throw error;
       return data;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["attendances"] }); },
