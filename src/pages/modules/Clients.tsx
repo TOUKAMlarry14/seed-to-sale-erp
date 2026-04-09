@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useClients, useCreateClient, useUpdateClient } from "@/hooks/useClients";
 import { DataTable } from "@/components/DataTable";
+import { ExportButtons } from "@/components/ExportButtons";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,15 @@ export function Clients() {
     setOpen(true);
   };
 
+  const exportColumns = [
+    { key: "name", label: "Nom" },
+    { key: "type", label: "Type", render: (r: any) => CLIENT_TYPES.find(t => t.value === r.type)?.label || r.type },
+    { key: "phone", label: "Téléphone" },
+    { key: "email", label: "Email" },
+    { key: "balance", label: "Solde", render: (r: any) => String(r.balance) },
+    { key: "address", label: "Adresse" },
+  ];
+
   if (isLoading) return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin" /></div>;
 
   return (
@@ -51,30 +61,33 @@ export function Clients() {
           <h1 className="text-2xl font-heading font-bold">Gestion des clients</h1>
           <p className="text-sm text-muted-foreground">Répertoire et suivi de vos clients</p>
         </div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditClient(null); resetForm(); } }}>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-1" /> Ajouter</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>{editClient ? "Modifier le client" : "Nouveau client"}</DialogTitle></DialogHeader>
-            <div className="grid gap-3">
-              <div><Label>Nom</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
-              <div><Label>Type</Label>
-                <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{CLIENT_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
-                </Select>
+        <div className="flex gap-2">
+          <ExportButtons data={clients || []} columns={exportColumns} filename="clients" title="Liste des Clients" />
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditClient(null); resetForm(); } }}>
+            <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-1" /> Ajouter</Button></DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>{editClient ? "Modifier le client" : "Nouveau client"}</DialogTitle></DialogHeader>
+              <div className="grid gap-3">
+                <div><Label>Nom</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
+                <div><Label>Type</Label>
+                  <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{CLIENT_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
+                  <div><Label>Email</Label><Input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
+                </div>
+                <div><Label>Adresse</Label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} /></div>
+                <Button onClick={handleSubmit} disabled={!form.name || createClient.isPending || updateClient.isPending}>
+                  {(createClient.isPending || updateClient.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                  {editClient ? "Modifier" : "Créer"}
+                </Button>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
-                <div><Label>Email</Label><Input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
-              </div>
-              <div><Label>Adresse</Label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} /></div>
-              <Button onClick={handleSubmit} disabled={!form.name || createClient.isPending || updateClient.isPending}>
-                {(createClient.isPending || updateClient.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                {editClient ? "Modifier" : "Créer"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <DataTable

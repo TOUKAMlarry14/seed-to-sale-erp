@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useInvoices, useUpdateInvoice } from "@/hooks/useInvoices";
 import { DataTable } from "@/components/DataTable";
+import { ExportButtons } from "@/components/ExportButtons";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CURRENCY, INVOICE_STATUS_LABELS } from "@/lib/constants";
+import { formatDate } from "@/lib/utils";
 import { Loader2, CreditCard } from "lucide-react";
 
 const PAYMENT_MODES = [
@@ -39,13 +41,25 @@ export function Factures() {
 
   const filtered = invoices?.filter(i => statusFilter === "all" || i.status === statusFilter) || [];
 
+  const exportColumns = [
+    { key: "invoice_number", label: "N° Facture" },
+    { key: "client", label: "Client", render: (r: any) => r.clients?.name || "—" },
+    { key: "amount", label: "Montant", render: (r: any) => String(r.amount) },
+    { key: "amount_paid", label: "Payé", render: (r: any) => String(r.amount_paid || 0) },
+    { key: "due_date", label: "Échéance", render: (r: any) => r.due_date ? formatDate(r.due_date) : "—" },
+    { key: "status", label: "Statut", render: (r: any) => INVOICE_STATUS_LABELS[r.status as keyof typeof INVOICE_STATUS_LABELS] || r.status },
+  ];
+
   if (isLoading) return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin" /></div>;
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-heading font-bold">Factures</h1>
-        <p className="text-sm text-muted-foreground">Générez et gérez les factures</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-heading font-bold">Factures</h1>
+          <p className="text-sm text-muted-foreground">Générez et gérez les factures</p>
+        </div>
+        <ExportButtons data={filtered} columns={exportColumns} filename="factures" title="Liste des Factures" />
       </div>
 
       <div className="flex gap-2">
@@ -63,7 +77,7 @@ export function Factures() {
           { key: "client", label: "Client", render: (r) => (r as any).clients?.name || "—" },
           { key: "amount", label: `Montant (${CURRENCY})`, render: (r) => r.amount?.toLocaleString() },
           { key: "amount_paid", label: `Payé (${CURRENCY})`, render: (r) => (r.amount_paid || 0).toLocaleString() },
-          { key: "due_date", label: "Échéance", render: (r) => r.due_date ? new Date(r.due_date).toLocaleDateString("fr-FR") : "—" },
+          { key: "due_date", label: "Échéance", render: (r) => r.due_date ? formatDate(r.due_date) : "—" },
           { key: "status", label: "Statut", render: (r) => <StatusBadge status={r.status} /> },
           { key: "actions", label: "", render: (r) => r.status !== "paye" && (
             <Button variant="outline" size="sm" className="text-xs" onClick={() => { setPaymentDialog(r); setPayForm({ amount: r.amount - (r.amount_paid || 0), mode: "cash" }); }}>
@@ -79,7 +93,7 @@ export function Factures() {
           <div className="grid gap-3">
             <p className="text-sm">Facture : <strong>{paymentDialog?.invoice_number}</strong></p>
             <p className="text-sm">Reste à payer : <strong>{((paymentDialog?.amount || 0) - (paymentDialog?.amount_paid || 0)).toLocaleString()} {CURRENCY}</strong></p>
-            <div><Label>Montant reçu ({CURRENCY})</Label><Input type="number" value={payForm.amount} onChange={e => setPayForm({ ...payForm, amount: +e.target.value })} /></div>
+            <div><Label>Montant reçu ({CURRENCY})</Label><Input type="number" value={payForm.amount || ""} onFocus={e => { if (payForm.amount === 0) e.target.select(); }} onChange={e => setPayForm({ ...payForm, amount: +e.target.value })} /></div>
             <div><Label>Mode de paiement</Label>
               <Select value={payForm.mode} onValueChange={v => setPayForm({ ...payForm, mode: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
