@@ -115,77 +115,7 @@ function drawLine(x1: number, y1: number, x2: number, y2: number): string {
   return `0.8 0.8 0.8 RG\n0.5 w\n${x1} ${y1} m\n${x2} ${y2} l\nS\n`;
 }
 
-function buildPDF(pages: string[], width: number, height: number): Uint8Array {
-  const encoder = new TextEncoder();
-  
-  // We'll build a simple single-page PDF with all content on page 1
-  // For multi-page, we concatenate content streams
-  const allContent = pages.map((content, i) => {
-    // Flip Y coordinates for PDF (origin is bottom-left)
-    const flipped = content.replace(/(\d+\.?\d*) (\d+\.?\d*) Td/g, (_, x, y) => {
-      return `${x} ${height - parseFloat(y)} Td`;
-    }).replace(/(\d+\.?\d*) (\d+\.?\d*) (\d+\.?\d*) (\d+\.?\d*) re/g, (_, x, y, w, h) => {
-      return `${x} ${height - parseFloat(y) - parseFloat(h)} ${w} ${h} re`;
-    }).replace(/(\d+\.?\d*) (\d+\.?\d*) m/g, (_, x, y) => {
-      return `${x} ${height - parseFloat(y)} m`;
-    }).replace(/(\d+\.?\d*) (\d+\.?\d*) l/g, (_, x, y) => {
-      return `${x} ${height - parseFloat(y)} l`;
-    });
-    return flipped;
-  });
-
-  // Build multi-page PDF
-  let pdf = "%PDF-1.4\n";
-  const objects: string[] = [];
-  
-  // Object 1: Catalog
-  objects.push("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
-  
-  // Object 2: Pages
-  const pageRefs = pages.map((_, i) => `${3 + i * 2} 0 R`).join(" ");
-  objects.push(`2 0 obj\n<< /Type /Pages /Kids [${pageRefs}] /Count ${pages.length} >>\nendobj\n`);
-  
-  // Font object
-  const fontObjNum = 3 + pages.length * 2;
-  
-  // Page + Stream objects
-  pages.forEach((_, i) => {
-    const pageObjNum = 3 + i * 2;
-    const streamObjNum = 4 + i * 2;
-    
-    objects.push(`${pageObjNum} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Contents ${streamObjNum} 0 R /Resources << /Font << /F1 ${fontObjNum} 0 R >> >> >>\nendobj\n`);
-    
-    const streamData = allContent[i];
-    objects.push(`${streamObjNum} 0 obj\n<< /Length ${streamData.length} >>\nstream\n${streamData}\nendstream\nendobj\n`);
-  });
-  
-  // Font object
-  objects.push(`${fontObjNum} 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n`);
-  
-  // Build final PDF
-  let body = "";
-  const offsets: number[] = [];
-  let currentOffset = pdf.length;
-  
-  objects.forEach(obj => {
-    offsets.push(currentOffset);
-    body += obj;
-    currentOffset += obj.length;
-  });
-  
-  pdf += body;
-  
-  // Cross-reference
-  const xrefOffset = pdf.length;
-  let xref = `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
-  offsets.forEach(off => {
-    xref += `${String(off).padStart(10, "0")} 00000 n \n`;
-  });
-  
-  pdf += xref;
-  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
-  
-  return new Uint8Array(encoder.encode(pdf)) as unknown as BlobPart;
+function buildPDF(pages: string[], width: number, height: number): string {
 }
 
 function downloadBlob(blob: Blob, filename: string) {
