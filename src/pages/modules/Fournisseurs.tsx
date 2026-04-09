@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSuppliers, useCreateSupplier, useUpdateSupplier } from "@/hooks/useSuppliers";
 import { DataTable } from "@/components/DataTable";
+import { ExportButtons } from "@/components/ExportButtons";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -49,6 +50,13 @@ export function Fournisseurs() {
 
   const filtered = suppliers?.filter(s => !cityFilter || (s.address || "").toLowerCase().includes(cityFilter.toLowerCase())) || [];
 
+  const exportColumns = [
+    { key: "name", label: "Nom" },
+    { key: "phone", label: "Téléphone" },
+    { key: "email", label: "Email" },
+    { key: "address", label: "Adresse / Zone" },
+  ];
+
   if (isLoading) return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin" /></div>;
 
   return (
@@ -58,24 +66,27 @@ export function Fournisseurs() {
           <h1 className="text-2xl font-heading font-bold">Fournisseurs</h1>
           <p className="text-sm text-muted-foreground">Gérez vos fournisseurs et approvisionnements</p>
         </div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditItem(null); resetForm(); } }}>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-1" /> Ajouter</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>{editItem ? "Modifier le fournisseur" : "Nouveau fournisseur"}</DialogTitle></DialogHeader>
-            <div className="grid gap-3">
-              <div><Label>Nom</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
-                <div><Label>Email</Label><Input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
+        <div className="flex gap-2">
+          <ExportButtons data={filtered} columns={exportColumns} filename="fournisseurs" title="Liste des Fournisseurs" />
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditItem(null); resetForm(); } }}>
+            <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-1" /> Ajouter</Button></DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>{editItem ? "Modifier le fournisseur" : "Nouveau fournisseur"}</DialogTitle></DialogHeader>
+              <div className="grid gap-3">
+                <div><Label>Nom</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Téléphone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
+                  <div><Label>Email</Label><Input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
+                </div>
+                <div><Label>Adresse / Zone</Label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} /></div>
+                <Button onClick={handleSubmit} disabled={!form.name || createSupplier.isPending || updateSupplier.isPending}>
+                  {(createSupplier.isPending || updateSupplier.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                  {editItem ? "Modifier" : "Créer"}
+                </Button>
               </div>
-              <div><Label>Adresse / Zone</Label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} /></div>
-              <Button onClick={handleSubmit} disabled={!form.name || createSupplier.isPending || updateSupplier.isPending}>
-                {(createSupplier.isPending || updateSupplier.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                {editItem ? "Modifier" : "Créer"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <Input placeholder="Filtrer par ville/adresse..." value={cityFilter} onChange={e => setCityFilter(e.target.value)} className="max-w-xs" />

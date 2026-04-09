@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useProducts, useCreateProduct, useUpdateProduct } from "@/hooks/useProducts";
 import { DataTable } from "@/components/DataTable";
-import { StatusBadge } from "@/components/StatusBadge";
+import { ExportButtons } from "@/components/ExportButtons";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PRODUCT_CATEGORIES, PRODUCT_UNITS, CURRENCY } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import { Plus, Pencil, Loader2 } from "lucide-react";
 
 export function Catalogue() {
   const { data: products, isLoading } = useProducts();
@@ -40,6 +39,15 @@ export function Catalogue() {
 
   const filtered = products?.filter(p => categoryFilter === "all" || p.category === categoryFilter) || [];
 
+  const exportColumns = [
+    { key: "name", label: "Nom" },
+    { key: "category", label: "Catégorie" },
+    { key: "unit", label: "Unité" },
+    { key: "price_buy", label: "Prix achat", render: (r: any) => String(r.price_buy) },
+    { key: "price_sell", label: "Prix vente", render: (r: any) => String(r.price_sell) },
+    { key: "stock_qty", label: "Stock", render: (r: any) => String(r.stock_qty) },
+  ];
+
   if (isLoading) return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin" /></div>;
 
   return (
@@ -49,44 +57,45 @@ export function Catalogue() {
           <h1 className="text-2xl font-heading font-bold">Catalogue produits</h1>
           <p className="text-sm text-muted-foreground">Gérez votre catalogue de produits agroalimentaires</p>
         </div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditProduct(null); resetForm(); } }}>
-          <DialogTrigger asChild>
-            <Button><Plus className="h-4 w-4 mr-1" /> Ajouter</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>{editProduct ? "Modifier le produit" : "Nouveau produit"}</DialogTitle></DialogHeader>
-            <div className="grid gap-3">
-              <div><Label>Nom</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Catégorie</Label>
-                  <Select value={form.category} onValueChange={v => setForm({ ...form, category: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{PRODUCT_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                  </Select>
+        <div className="flex gap-2">
+          <ExportButtons data={filtered} columns={exportColumns} filename="catalogue_produits" title="Catalogue des Produits" />
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditProduct(null); resetForm(); } }}>
+            <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-1" /> Ajouter</Button></DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>{editProduct ? "Modifier le produit" : "Nouveau produit"}</DialogTitle></DialogHeader>
+              <div className="grid gap-3">
+                <div><Label>Nom</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Catégorie</Label>
+                    <Select value={form.category} onValueChange={v => setForm({ ...form, category: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{PRODUCT_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div><Label>Unité</Label>
+                    <Select value={form.unit} onValueChange={v => setForm({ ...form, unit: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{PRODUCT_UNITS.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div><Label>Unité</Label>
-                  <Select value={form.unit} onValueChange={v => setForm({ ...form, unit: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{PRODUCT_UNITS.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Prix achat ({CURRENCY})</Label><Input type="number" value={form.price_buy || ""} onFocus={e => { if (form.price_buy === 0) e.target.select(); }} onChange={e => setForm({ ...form, price_buy: +e.target.value })} /></div>
+                  <div><Label>Prix vente ({CURRENCY})</Label><Input type="number" value={form.price_sell || ""} onFocus={e => { if (form.price_sell === 0) e.target.select(); }} onChange={e => setForm({ ...form, price_sell: +e.target.value })} /></div>
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Stock actuel</Label><Input type="number" value={form.stock_qty || ""} onFocus={e => { if (form.stock_qty === 0) e.target.select(); }} onChange={e => setForm({ ...form, stock_qty: +e.target.value })} /></div>
+                  <div><Label>Stock minimum</Label><Input type="number" value={form.stock_min || ""} onFocus={e => { if (form.stock_min === 0) e.target.select(); }} onChange={e => setForm({ ...form, stock_min: +e.target.value })} /></div>
+                </div>
+                <div><Label>Description</Label><Input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} /></div>
+                <Button onClick={handleSubmit} disabled={!form.name || createProduct.isPending || updateProduct.isPending}>
+                  {(createProduct.isPending || updateProduct.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                  {editProduct ? "Modifier" : "Créer"}
+                </Button>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Prix achat ({CURRENCY})</Label><Input type="number" value={form.price_buy} onChange={e => setForm({ ...form, price_buy: +e.target.value })} /></div>
-                <div><Label>Prix vente ({CURRENCY})</Label><Input type="number" value={form.price_sell} onChange={e => setForm({ ...form, price_sell: +e.target.value })} /></div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Stock actuel</Label><Input type="number" value={form.stock_qty} onChange={e => setForm({ ...form, stock_qty: +e.target.value })} /></div>
-                <div><Label>Stock minimum</Label><Input type="number" value={form.stock_min} onChange={e => setForm({ ...form, stock_min: +e.target.value })} /></div>
-              </div>
-              <div><Label>Description</Label><Input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} /></div>
-              <Button onClick={handleSubmit} disabled={!form.name || createProduct.isPending || updateProduct.isPending}>
-                {(createProduct.isPending || updateProduct.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                {editProduct ? "Modifier" : "Créer"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="flex gap-2 flex-wrap">
