@@ -30,7 +30,7 @@ export function useUpdateSupplier() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...u }: { id: string; [key: string]: any }) => {
-      const { data, error } = await supabase.from("suppliers").update(u).eq("id", id).select().single();
+      const { data, error } = await supabase.from("suppliers").update(u as any).eq("id", id).select().single();
       if (error) throw error;
       return data;
     },
