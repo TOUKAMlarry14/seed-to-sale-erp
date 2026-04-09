@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DELIVERY_STATUS_LABELS } from "@/lib/constants";
+import { formatDate } from "@/lib/utils";
 import { Plus, Loader2 } from "lucide-react";
 
 export function Livraisons() {
@@ -23,9 +24,16 @@ export function Livraisons() {
   const [form, setForm] = useState({ order_id: "", driver_id: "", scheduled_date: "", notes: "" });
 
   const drivers = employees?.filter(e => e.role === "livreur" && e.is_active) || [];
+  // Only show orders with status "livree" for delivery creation
+  const deliverableOrders = orders?.filter(o => o.status === "livree") || [];
 
   const handleSubmit = () => {
-    createDelivery.mutate({ order_id: form.order_id, driver_id: form.driver_id || undefined, scheduled_date: form.scheduled_date || undefined, notes: form.notes }, {
+    createDelivery.mutate({
+      order_id: form.order_id,
+      driver_id: form.driver_id || undefined,
+      scheduled_date: form.scheduled_date || undefined,
+      notes: form.notes,
+    }, {
       onSuccess: () => { setOpen(false); setForm({ order_id: "", driver_id: "", scheduled_date: "", notes: "" }); }
     });
   };
@@ -46,10 +54,20 @@ export function Livraisons() {
           <DialogContent>
             <DialogHeader><DialogTitle>Nouvelle livraison</DialogTitle></DialogHeader>
             <div className="grid gap-3">
-              <div><Label>Commande</Label>
+              <div><Label>Commande (livrée)</Label>
                 <Select value={form.order_id} onValueChange={v => setForm({ ...form, order_id: v })}>
                   <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                  <SelectContent>{orders?.filter(o => o.status !== "annule").map(o => <SelectItem key={o.id} value={o.id}>{(o as any).clients?.name || "—"} — {o.total?.toLocaleString()} FCFA</SelectItem>)}</SelectContent>
+                  <SelectContent>
+                    {deliverableOrders.length === 0 ? (
+                      <SelectItem value="none" disabled>Aucune commande livrée</SelectItem>
+                    ) : (
+                      deliverableOrders.map(o => (
+                        <SelectItem key={o.id} value={o.id}>
+                          {(o as any).clients?.name || "—"} — {o.total?.toLocaleString()} FCFA
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
                 </Select>
               </div>
               <div><Label>Livreur</Label>
@@ -60,7 +78,7 @@ export function Livraisons() {
               </div>
               <div><Label>Date prévue</Label><Input type="date" value={form.scheduled_date} onChange={e => setForm({ ...form, scheduled_date: e.target.value })} /></div>
               <div><Label>Notes</Label><Input value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} /></div>
-              <Button onClick={handleSubmit} disabled={!form.order_id || createDelivery.isPending}>
+              <Button onClick={handleSubmit} disabled={!form.order_id || form.order_id === "none" || createDelivery.isPending}>
                 {createDelivery.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}Créer
               </Button>
             </div>
@@ -76,7 +94,7 @@ export function Livraisons() {
       </div>
 
       <DataTable data={filtered} searchKey="notes" columns={[
-        { key: "scheduled_date", label: "Date", render: (r) => r.scheduled_date ? new Date(r.scheduled_date).toLocaleDateString("fr-FR") : "—" },
+        { key: "scheduled_date", label: "Date", render: (r) => formatDate(r.scheduled_date) },
         { key: "client", label: "Client", render: (r) => (r as any).orders?.clients?.name || "—" },
         { key: "status", label: "Statut", render: (r) => <StatusBadge status={r.status} /> },
         { key: "actions", label: "", render: (r) => (
@@ -84,8 +102,8 @@ export function Livraisons() {
             {r.status === "en_attente" && <Button variant="outline" size="sm" className="text-xs" onClick={() => updateDelivery.mutate({ id: r.id, status: "en_cours" })}>Démarrer</Button>}
             {r.status === "en_cours" && (
               <>
-                <Button variant="outline" size="sm" className="text-xs" onClick={() => updateDelivery.mutate({ id: r.id, status: "livre", delivered_at: new Date().toISOString() })}>Livrée</Button>
-                <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => updateDelivery.mutate({ id: r.id, status: "echoue" })}>Échec</Button>
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => updateDelivery.mutate({ id: r.id, status: "livree", delivered_at: new Date().toISOString() })}>Livrée</Button>
+                <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => updateDelivery.mutate({ id: r.id, status: "echouee" })}>Échec</Button>
               </>
             )}
           </div>

@@ -4,12 +4,14 @@ import { useClients } from "@/hooks/useClients";
 import { useProducts } from "@/hooks/useProducts";
 import { DataTable } from "@/components/DataTable";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CURRENCY, ORDER_STATUS_LABELS } from "@/lib/constants";
+import { formatDate } from "@/lib/utils";
 import { Plus, Loader2 } from "lucide-react";
 
 export function Commandes() {
@@ -20,6 +22,7 @@ export function Commandes() {
   const updateOrder = useUpdateOrder();
   const [open, setOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [cancelTarget, setCancelTarget] = useState<any>(null);
 
   const [form, setForm] = useState({ client_id: "", notes: "", delivery_address: "" });
   const [items, setItems] = useState<{ product_id: string; quantity: number; unit_price: number }[]>([]);
@@ -42,6 +45,18 @@ export function Commandes() {
     createOrder.mutate({ client_id: form.client_id, notes: form.notes, delivery_address: form.delivery_address, items }, {
       onSuccess: () => { setOpen(false); setForm({ client_id: "", notes: "", delivery_address: "" }); setItems([]); }
     });
+  };
+
+  const nextStatus: Record<string, string> = {
+    en_attente: "confirmee",
+    confirmee: "en_preparation",
+    en_preparation: "livree",
+  };
+
+  const nextLabel: Record<string, string> = {
+    en_attente: "Confirmer",
+    confirmee: "Préparer",
+    en_preparation: "Marquer livrée",
   };
 
   const filtered = orders?.filter(o => statusFilter === "all" || o.status === statusFilter) || [];
@@ -77,8 +92,8 @@ export function Commandes() {
                         <SelectContent>{products?.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <div className="col-span-2"><Input type="number" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} className="text-xs" /></div>
-                    <div className="col-span-3"><Input type="number" value={item.unit_price} onChange={e => updateItem(i, "unit_price", +e.target.value)} className="text-xs" /></div>
+                    <div className="col-span-2"><Input type="number" value={item.quantity || ""} onFocus={e => { if (item.quantity === 0) e.target.select(); }} onChange={e => updateItem(i, "quantity", +e.target.value)} className="text-xs" /></div>
+                    <div className="col-span-3"><Input type="number" value={item.unit_price || ""} onFocus={e => { if (item.unit_price === 0) e.target.select(); }} onChange={e => updateItem(i, "unit_price", +e.target.value)} className="text-xs" /></div>
                     <div className="col-span-2"><Button variant="ghost" size="sm" onClick={() => removeItem(i)} className="text-destructive text-xs">×</Button></div>
                   </div>
                 ))}
@@ -93,7 +108,7 @@ export function Commandes() {
         </Dialog>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <Button variant={statusFilter === "all" ? "default" : "outline"} size="sm" onClick={() => setStatusFilter("all")}>Tout</Button>
         {Object.entries(ORDER_STATUS_LABELS).map(([k, v]) => (
           <Button key={k} variant={statusFilter === k ? "default" : "outline"} size="sm" onClick={() => setStatusFilter(k)}>{v}</Button>
@@ -104,21 +119,34 @@ export function Commandes() {
         data={filtered}
         searchKey="notes"
         columns={[
-          { key: "created_at", label: "Date", render: (r) => new Date(r.created_at).toLocaleDateString("fr-FR") },
+          { key: "created_at", label: "Date", render: (r) => formatDate(r.created_at) },
           { key: "client", label: "Client", render: (r) => (r as any).clients?.name || "—" },
           { key: "total", label: `Total (${CURRENCY})`, render: (r) => r.total?.toLocaleString() },
           { key: "status", label: "Statut", render: (r) => <StatusBadge status={r.status} /> },
           { key: "actions", label: "", render: (r) => (
-            r.status === "en_attente" ? (
-              <div className="flex gap-1">
-                <Button variant="outline" size="sm" className="text-xs" onClick={() => updateOrder.mutate({ id: r.id, status: "confirme" })}>Confirmer</Button>
-                <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => updateOrder.mutate({ id: r.id, status: "annule" })}>Annuler</Button>
-              </div>
-            ) : r.status === "confirme" ? (
-              <Button variant="outline" size="sm" className="text-xs" onClick={() => updateOrder.mutate({ id: r.id, status: "en_preparation" })}>Préparer</Button>
-            ) : null
+            <div className="flex gap-1">
+              {nextStatus[r.status] && (
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => updateOrder.mutate({ id: r.id, status: nextStatus[r.status] })}>
+                  {nextLabel[r.status]}
+                </Button>
+              )}
+              {r.status !== "livree" && r.status !== "annulee" && (
+                <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => setCancelTarget(r)}>
+                  Annuler
+                </Button>
+              )}
+            </div>
           )},
         ]}
+      />
+
+      <ConfirmDialog
+        open={!!cancelTarget}
+        onOpenChange={(v) => { if (!v) setCancelTarget(null); }}
+        title="Annuler la commande"
+        description={`Êtes-vous sûr de vouloir annuler cette commande ?`}
+        confirmLabel="Oui, annuler"
+        onConfirm={() => { if (cancelTarget) { updateOrder.mutate({ id: cancelTarget.id, status: "annulee" }); setCancelTarget(null); } }}
       />
     </div>
   );

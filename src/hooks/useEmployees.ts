@@ -16,8 +16,8 @@ export function useEmployees() {
 export function useCreateEmployee() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (e: { name: string; role: string; phone?: string; salary: number; hire_date?: string; department?: string }) => {
-      const { data, error } = await supabase.from("employees").insert(e).select().single();
+    mutationFn: async (e: { name: string; role: string; phone?: string; salary: number; hire_date?: string; department?: string; email?: string; bonus_amount?: number; bonus_reason?: string }) => {
+      const { data, error } = await supabase.from("employees").insert(e as any).select().single();
       if (error) throw error;
       return data;
     },
