@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CURRENCY } from "@/lib/constants";
+import { TodoWidget } from "@/components/TodoWidget";
 import { TrendingUp, ShoppingCart, Wallet, AlertTriangle, Truck, Users } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -110,6 +111,7 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+        <TodoWidget />
       </div>
     </div>
   );
