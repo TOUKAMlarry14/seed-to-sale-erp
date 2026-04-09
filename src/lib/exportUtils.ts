@@ -14,108 +14,65 @@ export function exportToCSV(data: Record<string, any>[], columns: { key: string;
   downloadBlob(blob, `${filename}.csv`);
 }
 
-// ─── PDF Export ───
+// ─── Simple PDF Export (text-based, no binary issues) ───
 export function exportToPDF(
   data: Record<string, any>[],
   columns: { key: string; label: string }[],
   title: string,
   filename: string
 ) {
-  const pageWidth = 842; // A4 landscape
-  const pageHeight = 595;
-  const margin = 40;
-  const headerHeight = 80;
-  const rowHeight = 20;
-  const fontSize = 9;
-  const headerFontSize = 10;
-  const colWidth = (pageWidth - 2 * margin) / columns.length;
+  // Build an HTML table and print it
+  const colWidths = columns.map(() => `${Math.floor(100 / columns.length)}%`);
   
-  let currentY = 0;
-  let pageNum = 1;
-  const pages: string[] = [];
-  let currentPageContent = "";
-
-  const startNewPage = () => {
-    if (currentPageContent) {
-      pages.push(currentPageContent);
-    }
-    currentPageContent = "";
-    currentY = margin + headerHeight;
-    pageNum++;
-    
-    // Header on each page
-    currentPageContent += drawText("AgroConnect SARL — ERP", margin, margin + 20, 14, "0 0.278 0.631 rg");
-    currentPageContent += drawText(title, margin, margin + 38, 12, "0.2 0.2 0.2 rg");
-    currentPageContent += drawText(`Généré le ${new Date().toLocaleDateString("fr-FR")} — Page ${pageNum}`, margin, margin + 52, 8, "0.5 0.5 0.5 rg");
-    currentPageContent += drawLine(margin, margin + 60, pageWidth - margin, margin + 60);
-    
-    // Table header
-    currentPageContent += drawRect(margin, currentY, pageWidth - 2 * margin, rowHeight, "0.106 0.420 0.227");
-    columns.forEach((col, i) => {
-      currentPageContent += drawText(col.label, margin + i * colWidth + 4, currentY + 14, headerFontSize, "1 1 1 rg");
-    });
-    currentY += rowHeight;
-  };
-
-  // First page
-  currentPageContent += drawText("AgroConnect SARL — ERP", margin, margin + 20, 14, "0 0.278 0.631 rg");
-  currentPageContent += drawText(title, margin, margin + 38, 12, "0.2 0.2 0.2 rg");
-  currentPageContent += drawText(`Généré le ${new Date().toLocaleDateString("fr-FR")} — Page 1`, margin, margin + 52, 8, "0.5 0.5 0.5 rg");
-  currentPageContent += drawLine(margin, margin + 60, pageWidth - margin, margin + 60);
+  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
+<style>
+  @media print { @page { size: A4 landscape; margin: 15mm; } }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #222; margin: 0; padding: 20px; }
+  .header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; border-bottom: 2px solid #1B6B3A; padding-bottom: 12px; }
+  .header h1 { color: #1B6B3A; font-size: 18px; margin: 0; }
+  .header p { color: #666; font-size: 10px; margin: 2px 0; }
+  .title { font-size: 14px; font-weight: bold; color: #0D47A1; margin: 8px 0 4px; }
+  .meta { font-size: 9px; color: #888; margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #1B6B3A; color: white; padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 600; }
+  td { padding: 5px 8px; border-bottom: 1px solid #e0e0e0; font-size: 10px; }
+  tr:nth-child(even) { background: #f8f8f8; }
+  .footer { margin-top: 20px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8px; color: #999; text-align: center; }
+</style></head><body>`;
   
-  currentY = margin + headerHeight;
-  // Table header
-  currentPageContent += drawRect(margin, currentY, pageWidth - 2 * margin, rowHeight, "0.106 0.420 0.227");
-  columns.forEach((col, i) => {
-    currentPageContent += drawText(col.label, margin + i * colWidth + 4, currentY + 14, headerFontSize, "1 1 1 rg");
-  });
-  currentY += rowHeight;
-
-  // Rows
-  data.forEach((row, rowIdx) => {
-    if (currentY + rowHeight > pageHeight - margin) {
-      startNewPage();
-    }
-    
-    const bg = rowIdx % 2 === 0 ? "0.96 0.96 0.96" : "1 1 1";
-    currentPageContent += drawRect(margin, currentY, pageWidth - 2 * margin, rowHeight, bg);
-    
-    columns.forEach((col, i) => {
-      const val = truncate(String(row[col.key] ?? "—"), Math.floor(colWidth / 5));
-      currentPageContent += drawText(val, margin + i * colWidth + 4, currentY + 14, fontSize, "0.15 0.15 0.15 rg");
+  html += `<div class="header"><div><h1>AgroConnect SARL</h1><p>Distribution Agroalimentaire — Douala, Cameroun</p></div></div>`;
+  html += `<div class="title">${title}</div>`;
+  html += `<div class="meta">Généré le ${new Date().toLocaleDateString("fr-FR")} à ${new Date().toLocaleTimeString("fr-FR")} — ${data.length} enregistrement(s)</div>`;
+  
+  html += `<table><thead><tr>`;
+  columns.forEach(c => { html += `<th>${c.label}</th>`; });
+  html += `</tr></thead><tbody>`;
+  
+  data.forEach(row => {
+    html += `<tr>`;
+    columns.forEach(c => {
+      html += `<td>${escapeHtml(String(row[c.key] ?? "—"))}</td>`;
     });
-    currentY += rowHeight;
+    html += `</tr>`;
   });
+  
+  html += `</tbody></table>`;
+  html += `<div class="footer">AgroConnect ERP — Document confidentiel — ${new Date().getFullYear()}</div>`;
+  html += `</body></html>`;
 
-  pages.push(currentPageContent);
-
-  // Build minimal PDF
-  const pdfContent = buildPDF(pages, pageWidth, pageHeight);
-  const blob = new Blob([pdfContent], { type: "application/pdf" });
-  downloadBlob(blob, `${filename}.pdf`);
+  // Open in new window and trigger print
+  const printWindow = window.open("", "_blank");
+  if (printWindow) {
+    printWindow.document.write(html);
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  }
 }
 
-function truncate(s: string, max: number): string {
-  return s.length > max ? s.substring(0, max - 1) + "…" : s;
-}
-
-function escapeText(text: string): string {
-  return text.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
-}
-
-function drawText(text: string, x: number, y: number, size: number, color: string = "0 0 0 rg"): string {
-  return `BT\n${color}\n/F1 ${size} Tf\n${x} ${y} Td\n(${escapeText(text)}) Tj\nET\n`;
-}
-
-function drawRect(x: number, y: number, w: number, h: number, color: string): string {
-  return `${color} rg\n${x} ${y} ${w} ${h} re\nf\n`;
-}
-
-function drawLine(x1: number, y1: number, x2: number, y2: number): string {
-  return `0.8 0.8 0.8 RG\n0.5 w\n${x1} ${y1} m\n${x2} ${y2} l\nS\n`;
-}
-
-function buildPDF(pages: string[], width: number, height: number): string {
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -130,7 +87,10 @@ function downloadBlob(blob: Blob, filename: string) {
 }
 
 // Helper to prepare flat data from any module
-export function flattenForExport(data: any[], columnDefs: { key: string; label: string; render?: (row: any) => string }[]): { data: Record<string, any>[]; columns: { key: string; label: string }[] } {
+export function flattenForExport(
+  data: any[],
+  columnDefs: { key: string; label: string; render?: (row: any) => string }[]
+): { data: Record<string, any>[]; columns: { key: string; label: string }[] } {
   const columns = columnDefs.map(c => ({ key: c.key, label: c.label }));
   const flatData = data.map(row => {
     const flat: Record<string, any> = {};
