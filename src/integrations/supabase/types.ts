@@ -134,6 +134,7 @@ export type Database = {
         Row: {
           created_at: string
           delivered_at: string | null
+          destination: string | null
           driver_id: string | null
           id: string
           notes: string | null
@@ -145,6 +146,7 @@ export type Database = {
         Insert: {
           created_at?: string
           delivered_at?: string | null
+          destination?: string | null
           driver_id?: string | null
           id?: string
           notes?: string | null
@@ -156,6 +158,7 @@ export type Database = {
         Update: {
           created_at?: string
           delivered_at?: string | null
+          destination?: string | null
           driver_id?: string | null
           id?: string
           notes?: string | null
@@ -188,6 +191,7 @@ export type Database = {
           bonus_expiry: string | null
           bonus_reason: string | null
           created_at: string
+          deduction_reason: string | null
           department: string | null
           email: string | null
           hire_date: string
@@ -197,6 +201,7 @@ export type Database = {
           phone: string | null
           role: string
           salary: number
+          salary_deduction: number | null
           status: string | null
           termination_date: string | null
           termination_reason: string | null
@@ -209,6 +214,7 @@ export type Database = {
           bonus_expiry?: string | null
           bonus_reason?: string | null
           created_at?: string
+          deduction_reason?: string | null
           department?: string | null
           email?: string | null
           hire_date?: string
@@ -218,6 +224,7 @@ export type Database = {
           phone?: string | null
           role?: string
           salary?: number
+          salary_deduction?: number | null
           status?: string | null
           termination_date?: string | null
           termination_reason?: string | null
@@ -230,6 +237,7 @@ export type Database = {
           bonus_expiry?: string | null
           bonus_reason?: string | null
           created_at?: string
+          deduction_reason?: string | null
           department?: string | null
           email?: string | null
           hire_date?: string
@@ -239,6 +247,7 @@ export type Database = {
           phone?: string | null
           role?: string
           salary?: number
+          salary_deduction?: number | null
           status?: string | null
           termination_date?: string | null
           termination_reason?: string | null
