@@ -16,14 +16,14 @@ export async function logActivity(
       .eq("id", user.id)
       .single();
 
-    await supabase.from("activity_logs").insert({
+    await supabase.from("activity_logs").insert([{
       action,
       entity_type: entityType,
       entity_id: entityId || null,
       user_id: user.id,
       user_name: profile?.full_name || user.email || "Inconnu",
-      details: details || {},
-    });
+      details: (details || {}) as any,
+    }]);
   } catch (e) {
     console.error("Failed to log activity:", e);
   }
