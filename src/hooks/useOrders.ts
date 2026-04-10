@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export function useOrders() {
   return useQuery({
@@ -30,7 +31,13 @@ export function useCreateOrder() {
   return useMutation({
     mutationFn: async (order: { client_id: string; notes?: string; delivery_address?: string; items: { product_id: string; quantity: number; unit_price: number }[] }) => {
       const total = order.items.reduce((s, i) => s + i.quantity * i.unit_price, 0);
-      const { data, error } = await supabase.from("orders").insert({ client_id: order.client_id, notes: order.notes || "", delivery_address: order.delivery_address || "", total, created_by: (await supabase.auth.getUser()).data.user?.id }).select().single();
+      const { data, error } = await supabase.from("orders").insert({
+        client_id: order.client_id,
+        notes: order.notes || "",
+        delivery_address: order.delivery_address || "",
+        total,
+        created_by: (await supabase.auth.getUser()).data.user?.id,
+      }).select().single();
       if (error) throw error;
       const items = order.items.map(i => ({ order_id: data.id, product_id: i.product_id, quantity: i.quantity, unit_price: i.unit_price, total: i.quantity * i.unit_price }));
       const { error: e2 } = await supabase.from("order_items").insert(items);
@@ -38,19 +45,19 @@ export function useCreateOrder() {
       return data;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["orders"] }); toast({ title: "Commande créée" }); },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
 }
 
 export function useUpdateOrder() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; [key: string]: any }) => {
-      const { data, error } = await supabase.from("orders").update(updates as any).eq("id", id).select().single();
+    mutationFn: async ({ id, ...updates }: { id: string } & TablesUpdate<"orders">) => {
+      const { data, error } = await supabase.from("orders").update(updates).eq("id", id).select().single();
       if (error) throw error;
       return data;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["orders"] }); toast({ title: "Commande mise à jour" }); },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
 }

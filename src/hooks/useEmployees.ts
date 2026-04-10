@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 
 export function useEmployees() {
   return useQuery({
@@ -16,25 +17,37 @@ export function useEmployees() {
 export function useCreateEmployee() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (e: { name: string; role: string; phone?: string; salary: number; hire_date?: string; department?: string; email?: string; bonus_amount?: number; bonus_reason?: string }) => {
-      const { data, error } = await supabase.from("employees").insert(e as any).select().single();
+    mutationFn: async (e: TablesInsert<"employees">) => {
+      const { data, error } = await supabase.from("employees").insert(e).select().single();
       if (error) throw error;
       return data;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["employees"] }); toast({ title: "Employé créé" }); },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
 }
 
 export function useUpdateEmployee() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...u }: { id: string; [key: string]: any }) => {
-      const { data, error } = await supabase.from("employees").update(u as any).eq("id", id).select().single();
+    mutationFn: async ({ id, ...u }: { id: string } & TablesUpdate<"employees">) => {
+      const { data, error } = await supabase.from("employees").update(u).eq("id", id).select().single();
       if (error) throw error;
       return data;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["employees"] }); toast({ title: "Employé mis à jour" }); },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+  });
+}
+
+export function useDeleteEmployee() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("employees").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["employees"] }); toast({ title: "Employé supprimé" }); },
+    onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
 }
