@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/contexts/I18nContext";
 
 const statusStyles: Record<string, string> = {
   en_attente: "bg-warning/15 text-warning border-warning/30",
@@ -24,34 +25,12 @@ const statusStyles: Record<string, string> = {
   renvoye: "bg-destructive/15 text-destructive border-destructive/30",
 };
 
-const statusLabels: Record<string, string> = {
-  en_attente: "En attente",
-  confirme: "Confirmée",
-  confirmee: "Confirmée",
-  en_preparation: "En préparation",
-  livre: "Livrée",
-  livree: "Livrée",
-  annule: "Annulée",
-  annulee: "Annulée",
-  en_cours: "En cours",
-  echoue: "Échouée",
-  echouee: "Échouée",
-  paye: "Payée",
-  impaye: "Impayée",
-  partiel: "Partielle",
-  present: "Présent",
-  absent: "Absent",
-  conge: "Congé",
-  mission: "Mission",
-  actif: "Actif",
-  suspendu: "Suspendu",
-  renvoye: "Renvoyé",
-};
-
 export function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+  const label = t(`status.${status}`);
   return (
     <Badge variant="outline" className={`text-[10px] font-medium ${statusStyles[status] || ""}`}>
-      {statusLabels[status] || status}
+      {label !== `status.${status}` ? label : status}
     </Badge>
   );
 }
