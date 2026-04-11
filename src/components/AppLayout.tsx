@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useAuth } from "@/hooks/useAuth";
-import { ROLE_LABELS } from "@/lib/constants";
 import { NotificationsPopover } from "@/components/NotificationsPopover";
 import { ChatbotFAB } from "@/components/ChatbotFAB";
 import { OnboardingTour } from "@/components/OnboardingTour";
@@ -14,7 +13,7 @@ import { Moon, Sun, Globe } from "lucide-react";
 export function AppLayout() {
   const { profile, roles } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { lang, setLang } = useTranslation();
+  const { lang, setLang, t } = useTranslation();
 
   return (
     <SidebarProvider>
@@ -25,21 +24,21 @@ export function AppLayout() {
             <div className="flex items-center gap-3">
               <SidebarTrigger />
               <h1 className="text-sm font-heading font-semibold text-foreground hidden sm:block">
-                AgroConnect ERP
+                {t("app.name")}
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={toggleTheme} title={theme === "dark" ? "Mode clair" : "Mode sombre"}>
+              <Button variant="ghost" size="icon" onClick={toggleTheme} title={theme === "dark" ? t("theme.switch_light") : t("theme.switch_dark")}>
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => setLang(lang === "fr" ? "en" : "fr")} title={lang === "fr" ? "Switch to English" : "Passer en Français"}>
+              <Button variant="ghost" size="icon" onClick={() => setLang(lang === "fr" ? "en" : "fr")} title={lang === "fr" ? t("lang.switch_en") : t("lang.switch_fr")}>
                 <Globe className="h-4 w-4" />
               </Button>
               <NotificationsPopover />
               <div className="text-right hidden sm:block ml-2">
-                <p className="text-xs font-medium">{profile?.full_name || "Utilisateur"}</p>
+                <p className="text-xs font-medium">{profile?.full_name || t("app.user")}</p>
                 <p className="text-[10px] text-muted-foreground">
-                  {roles.map((r) => ROLE_LABELS[r]).join(", ") || "—"}
+                  {roles.map((r) => t(`role.${r}`)).join(", ") || "—"}
                 </p>
               </div>
             </div>

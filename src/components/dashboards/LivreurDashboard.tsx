@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "@/contexts/I18nContext";
 import { Truck, CheckCircle, Clock, MapPin } from "lucide-react";
 import { StatusBadge } from "@/components/StatusBadge";
 
@@ -10,29 +11,31 @@ const deliveries = [
 ];
 
 export default function LivreurDashboard() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-heading font-bold">Mes livraisons du jour</h1>
-        <p className="text-sm text-muted-foreground">Livraisons assignées — {new Date().toLocaleDateString("fr-FR")}</p>
+        <h1 className="text-2xl font-heading font-bold">{t("dashboard.livreur_title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("dashboard.livreur_subtitle")} — {new Date().toLocaleDateString("fr-FR")}</p>
       </div>
       <div className="grid gap-4 grid-cols-3">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <Truck className="h-5 w-5 text-primary" />
-            <div><p className="text-lg font-heading font-bold">{deliveries.length}</p><p className="text-[10px] text-muted-foreground">Total du jour</p></div>
+            <div><p className="text-lg font-heading font-bold">{deliveries.length}</p><p className="text-[10px] text-muted-foreground">{t("dashboard.total_day")}</p></div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <Clock className="h-5 w-5 text-warning" />
-            <div><p className="text-lg font-heading font-bold">{deliveries.filter(d => d.statut !== "livre").length}</p><p className="text-[10px] text-muted-foreground">En attente</p></div>
+            <div><p className="text-lg font-heading font-bold">{deliveries.filter(d => d.statut !== "livre").length}</p><p className="text-[10px] text-muted-foreground">{t("status.en_attente")}</p></div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <CheckCircle className="h-5 w-5 text-success" />
-            <div><p className="text-lg font-heading font-bold">{deliveries.filter(d => d.statut === "livre").length}</p><p className="text-[10px] text-muted-foreground">Livrées</p></div>
+            <div><p className="text-lg font-heading font-bold">{deliveries.filter(d => d.statut === "livre").length}</p><p className="text-[10px] text-muted-foreground">{t("dashboard.delivered_count")}</p></div>
           </CardContent>
         </Card>
       </div>

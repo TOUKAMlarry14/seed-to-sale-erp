@@ -7,62 +7,62 @@ import {
 import type { AppRole } from "@/lib/constants";
 
 export interface NavItem {
-  title: string;
+  titleKey: string;
   url: string;
   icon: LucideIcon;
   roles?: AppRole[];
 }
 
 export interface NavSection {
-  label: string;
+  labelKey: string;
   items: NavItem[];
 }
 
 export const navigation: NavSection[] = [
   {
-    label: "Général",
+    labelKey: "section.general",
     items: [
-      { title: "Tableau de bord", url: "/", icon: LayoutDashboard },
-      { title: "Information", url: "/information", icon: Info },
+      { titleKey: "nav.dashboard", url: "/", icon: LayoutDashboard },
+      { titleKey: "nav.information", url: "/information", icon: Info },
     ],
   },
   {
-    label: "Ventes (M1)",
+    labelKey: "section.sales",
     items: [
-      { title: "Catalogue", url: "/catalogue", icon: Package, roles: ["admin", "commercial", "techadmin"] },
-      { title: "Clients", url: "/clients", icon: Users, roles: ["admin", "commercial", "techadmin"] },
-      { title: "Commandes", url: "/commandes", icon: ShoppingCart, roles: ["admin", "commercial", "techadmin"] },
-      { title: "Factures", url: "/factures", icon: FileText, roles: ["admin", "commercial", "financier", "techadmin"] },
+      { titleKey: "nav.catalogue", url: "/catalogue", icon: Package, roles: ["admin", "commercial", "techadmin"] },
+      { titleKey: "nav.clients", url: "/clients", icon: Users, roles: ["admin", "commercial", "techadmin"] },
+      { titleKey: "nav.orders", url: "/commandes", icon: ShoppingCart, roles: ["admin", "commercial", "techadmin"] },
+      { titleKey: "nav.invoices", url: "/factures", icon: FileText, roles: ["admin", "commercial", "financier", "techadmin"] },
     ],
   },
   {
-    label: "Stocks & Logistique (M2)",
+    labelKey: "section.stock",
     items: [
-      { title: "Inventaire", url: "/inventaire", icon: Warehouse, roles: ["admin", "logistique", "techadmin"] },
-      { title: "Fournisseurs", url: "/fournisseurs", icon: Building2, roles: ["admin", "logistique", "techadmin"] },
-      { title: "Livraisons", url: "/livraisons", icon: Truck, roles: ["admin", "logistique", "livreur", "techadmin"] },
+      { titleKey: "nav.inventory", url: "/inventaire", icon: Warehouse, roles: ["admin", "logistique", "techadmin"] },
+      { titleKey: "nav.suppliers", url: "/fournisseurs", icon: Building2, roles: ["admin", "logistique", "techadmin"] },
+      { titleKey: "nav.deliveries", url: "/livraisons", icon: Truck, roles: ["admin", "logistique", "livreur", "techadmin"] },
     ],
   },
   {
-    label: "Finance (M3)",
+    labelKey: "section.finance",
     items: [
-      { title: "Transactions", url: "/transactions", icon: DollarSign, roles: ["admin", "financier", "techadmin"] },
-      { title: "Reporting", url: "/reporting", icon: BarChart3, roles: ["admin", "financier", "techadmin"] },
+      { titleKey: "nav.transactions", url: "/transactions", icon: DollarSign, roles: ["admin", "financier", "techadmin"] },
+      { titleKey: "nav.reporting", url: "/reporting", icon: BarChart3, roles: ["admin", "financier", "techadmin"] },
     ],
   },
   {
-    label: "Ressources Humaines (M4)",
+    labelKey: "section.hr",
     items: [
-      { title: "Employés", url: "/employes", icon: UserCog, roles: ["admin", "rh", "techadmin"] },
-      { title: "Présences", url: "/presences", icon: CalendarCheck, roles: ["admin", "rh", "techadmin"] },
-      { title: "Paie", url: "/paie", icon: Receipt, roles: ["admin", "rh", "techadmin"] },
+      { titleKey: "nav.employees", url: "/employes", icon: UserCog, roles: ["admin", "rh", "techadmin"] },
+      { titleKey: "nav.attendance", url: "/presences", icon: CalendarCheck, roles: ["admin", "rh", "techadmin"] },
+      { titleKey: "nav.payroll", url: "/paie", icon: Receipt, roles: ["admin", "rh", "techadmin"] },
     ],
   },
   {
-    label: "Système",
+    labelKey: "section.system",
     items: [
-      { title: "Paramètres", url: "/parametres", icon: Settings, roles: ["admin", "techadmin"] },
-      { title: "Logs Système", url: "/logs", icon: ScrollText, roles: ["techadmin"] },
+      { titleKey: "nav.settings", url: "/parametres", icon: Settings, roles: ["admin", "techadmin"] },
+      { titleKey: "nav.logs", url: "/logs", icon: ScrollText, roles: ["techadmin"] },
     ],
   },
 ];

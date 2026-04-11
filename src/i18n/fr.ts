@@ -1,5 +1,12 @@
 export const fr: Record<string, string> = {
+  // App
   "app.name": "AgroConnect ERP",
+  "app.company": "AgroConnect SARL",
+  "app.erp_subtitle": "Solution ERP — Distribution Agroalimentaire",
+  "app.copyright": "© 2026 AgroConnect SARL — Douala, Cameroun",
+  "app.user": "Utilisateur",
+
+  // Navigation sections
   "nav.dashboard": "Tableau de bord",
   "nav.catalogue": "Catalogue",
   "nav.clients": "Clients",
@@ -23,6 +30,8 @@ export const fr: Record<string, string> = {
   "section.finance": "Finance (M3)",
   "section.hr": "Ressources Humaines (M4)",
   "section.system": "Système",
+
+  // Auth
   "auth.login": "Se connecter",
   "auth.signup": "Créer un compte",
   "auth.logout": "Déconnexion",
@@ -41,8 +50,10 @@ export const fr: Record<string, string> = {
   "auth.send_link": "Envoyer le lien",
   "auth.back_login": "Retour à la connexion",
   "auth.loading": "Chargement...",
-  "auth.erp_subtitle": "Solution ERP — Distribution Agroalimentaire",
-  "auth.copyright": "© 2026 AgroConnect SARL — Douala, Cameroun",
+  "auth.show_password": "Afficher le mot de passe",
+  "auth.hide_password": "Masquer le mot de passe",
+
+  // Common
   "common.add": "Ajouter",
   "common.edit": "Modifier",
   "common.delete": "Supprimer",
@@ -71,29 +82,52 @@ export const fr: Record<string, string> = {
   "common.notes": "Notes",
   "common.no_data": "Aucune donnée",
   "common.results": "résultat(s)",
+  "common.select": "Sélectionner",
+  "common.optional": "Optionnel",
+  "common.product": "Produit",
+  "common.quantity": "Quantité",
+  "common.total": "Total",
+  "common.category": "Catégorie",
+  "common.reason": "Motif",
+  "common.yes_delete": "Oui, supprimer",
+  "common.close": "Fermer",
+
+  // Confirm dialog
   "confirm.title": "Confirmation",
   "confirm.delete_message": "Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.",
+  "confirm.action_message": "Êtes-vous sûr de vouloir effectuer cette action ? Cette action est irréversible.",
   "confirm.yes": "Oui, supprimer",
   "confirm.no": "Annuler",
-  "theme.light": "Clair",
-  "theme.dark": "Sombre",
+
+  // Theme & Language
+  "theme.light": "Mode clair",
+  "theme.dark": "Mode sombre",
+  "theme.switch_light": "Passer en mode clair",
+  "theme.switch_dark": "Passer en mode sombre",
   "lang.fr": "Français",
   "lang.en": "English",
+  "lang.switch_en": "Switch to English",
+  "lang.switch_fr": "Passer en Français",
+
+  // Settings
+  "settings.title": "Paramètres",
+  "settings.subtitle": "Configuration de votre compte et de l'application",
   "settings.profile": "Profil & Sécurité",
   "settings.preferences": "Préférences",
   "settings.notifications": "Notifications",
   "settings.support": "Support & Aide",
-  "settings.title": "Paramètres",
-  "settings.subtitle": "Configuration de votre compte et de l'application",
   "settings.personal_info": "Informations personnelles",
+  "settings.full_name": "Nom complet",
   "settings.change_password": "Modifier le mot de passe",
   "settings.change_password_desc": "Choisissez un nouveau mot de passe sécurisé",
   "settings.new_password": "Nouveau mot de passe",
   "settings.confirm_pw": "Confirmer",
+  "settings.btn_change_pw": "Changer le mot de passe",
+  "settings.pw_min_6": "Le mot de passe doit avoir au moins 6 caractères.",
+  "settings.pw_mismatch": "Les mots de passe ne correspondent pas.",
+  "settings.pw_success": "Mot de passe modifié avec succès",
   "settings.theme_title": "Thème",
   "settings.theme_desc": "Choisissez entre le mode clair et sombre",
-  "settings.dark_mode": "Mode sombre",
-  "settings.light_mode": "Mode clair",
   "settings.lang_title": "Langue",
   "settings.lang_desc": "Choisissez la langue de l'interface",
   "settings.notif_title": "Paramètres de notifications",
@@ -107,17 +141,31 @@ export const fr: Record<string, string> = {
   "settings.late_delivery_alert": "Livraisons en retard",
   "settings.late_delivery_desc": "Alerte quand une livraison dépasse la date prévue",
   "settings.faq_title": "FAQ — Questions fréquentes",
+  "settings.faq_q1": "Comment créer une commande ?",
+  "settings.faq_a1": "Rendez-vous dans le module Ventes → Commandes. Cliquez sur \"Nouvelle commande\", sélectionnez un client, ajoutez les produits et validez.",
+  "settings.faq_q2": "Comment générer une fiche de paie ?",
+  "settings.faq_a2": "Allez dans RH → Paie. Cliquez sur \"Fiche individuelle\" pour un employé, ou \"Générer tout le mois\" pour l'ensemble. Le calcul CNPS (2.8%) et impôts est automatique.",
+  "settings.faq_q3": "Comment suivre les stocks ?",
+  "settings.faq_a3": "Le module Stocks → Inventaire affiche l'état du stock en temps réel. Les produits en alerte sont signalés en rouge. Utilisez \"Mouvement\" pour enregistrer les entrées/sorties.",
+  "settings.faq_q4": "Comment contacter le support ?",
+  "settings.faq_a4": "Envoyez un email à support@agroconnect.cm ou utilisez le chatbot IA (bouton vert en bas à droite) pour une aide immédiate.",
   "settings.tour_title": "Visite guidée",
   "settings.tour_desc": "Relancez la présentation interactive de l'ERP",
   "settings.restart_tour": "Relancer la visite guidée",
   "settings.contact_title": "Contact support",
+
+  // Notifications
   "notifications.title": "Notifications",
   "notifications.empty": "Aucune notification",
   "notifications.mark_all": "Tout marquer comme lu",
+
+  // Chat
   "chat.title": "Assistant AgroConnect",
   "chat.placeholder": "Posez votre question...",
   "chat.welcome": "Bonjour ! Je suis l'assistant IA d'AgroConnect. Comment puis-je vous aider ?",
   "chat.powered_by": "Propulsé par IA",
+
+  // Dashboard
   "dashboard.title": "Tableau de bord — Direction Générale",
   "dashboard.subtitle": "Vue d'ensemble de l'activité AgroConnect",
   "dashboard.monthly_revenue": "CA du mois",
@@ -130,6 +178,74 @@ export const fr: Record<string, string> = {
   "dashboard.expenses_chart": "Répartition des dépenses",
   "dashboard.orders_chart": "Commandes par semaine",
   "dashboard.alerts_title": "Alertes",
+  "dashboard.products": "produits",
+  "dashboard.late": "en retard",
+  "dashboard.revenue": "CA",
+
+  // Dashboard - Commercial
+  "dashboard.commercial_title": "Tableau de bord — Commercial",
+  "dashboard.commercial_subtitle": "Suivi des ventes et de la clientèle",
+  "dashboard.active_clients": "Clients actifs",
+  "dashboard.top_products": "Top 5 produits vendus",
+  "dashboard.weekly_orders": "Commandes par semaine",
+
+  // Dashboard - Logistique
+  "dashboard.logistique_title": "Tableau de bord — Logistique",
+  "dashboard.logistique_subtitle": "Suivi des stocks et des livraisons",
+  "dashboard.out_of_stock": "Produits en rupture",
+  "dashboard.weekly_entries": "Entrées cette semaine",
+  "dashboard.delivery_rate": "Taux livraison réussie",
+  "dashboard.stock_entries_week": "Entrées de stock cette semaine",
+  "dashboard.top_restock": "Top 5 — À réapprovisionner",
+
+  // Dashboard - Finance
+  "dashboard.finance_title": "Tableau de bord — Finance",
+  "dashboard.finance_subtitle": "Suivi de la trésorerie et des finances",
+  "dashboard.month_expenses": "Dépenses du mois",
+  "dashboard.cash_evolution": "Évolution trésorerie (6 mois)",
+  "dashboard.balance": "Solde",
+
+  // Dashboard - RH
+  "dashboard.rh_title": "Tableau de bord — Ressources Humaines",
+  "dashboard.rh_subtitle": "Suivi du personnel et de la paie",
+  "dashboard.present_today": "Présents aujourd'hui",
+  "dashboard.ongoing_leaves": "Congés en cours",
+  "dashboard.payroll_total": "Masse salariale",
+  "dashboard.presence_rate": "Taux de présence",
+  "dashboard.weekly_presence": "Taux de présence par semaine",
+  "dashboard.leaves_pending": "Congés à traiter",
+  "dashboard.approved": "Approuvé",
+  "dashboard.pending": "En attente",
+
+  // Dashboard - Livreur
+  "dashboard.livreur_title": "Mes livraisons du jour",
+  "dashboard.livreur_subtitle": "Livraisons assignées",
+  "dashboard.total_day": "Total du jour",
+  "dashboard.delivered_count": "Livrées",
+
+  // Chart data labels
+  "chart.purchases": "Achats",
+  "chart.salaries": "Salaires",
+  "chart.transport": "Transport",
+  "chart.rent": "Loyer",
+  "chart.other": "Autres",
+  "chart.orders": "commandes",
+  "chart.entries": "entrées",
+  "chart.rate": "taux",
+  "chart.week": "Semaine",
+  "chart.month.oct": "Oct",
+  "chart.month.nov": "Nov",
+  "chart.month.dec": "Déc",
+  "chart.month.jan": "Jan",
+  "chart.month.feb": "Fév",
+  "chart.month.mar": "Mar",
+  "chart.day.mon": "Lun",
+  "chart.day.tue": "Mar",
+  "chart.day.wed": "Mer",
+  "chart.day.thu": "Jeu",
+  "chart.day.fri": "Ven",
+
+  // Catalogue
   "catalogue.title": "Catalogue produits",
   "catalogue.subtitle": "Gérez votre catalogue de produits agroalimentaires",
   "catalogue.new_product": "Nouveau produit",
@@ -140,11 +256,16 @@ export const fr: Record<string, string> = {
   "catalogue.sell_price": "Prix vente",
   "catalogue.stock": "Stock",
   "catalogue.stock_min": "Stock minimum",
+
+  // Clients
   "clients.title": "Gestion des clients",
   "clients.subtitle": "Répertoire et suivi de vos clients",
   "clients.new_client": "Nouveau client",
   "clients.edit_client": "Modifier le client",
   "clients.balance": "Solde",
+  "clients.select_client": "Sélectionner un client",
+
+  // Orders
   "orders.title": "Commandes",
   "orders.subtitle": "Créez et suivez les commandes clients",
   "orders.new_order": "Nouvelle commande",
@@ -160,6 +281,10 @@ export const fr: Record<string, string> = {
   "orders.cancel_title": "Annuler la commande",
   "orders.cancel_desc": "Êtes-vous sûr de vouloir annuler cette commande ?",
   "orders.cancel_confirm": "Oui, annuler",
+  "orders.create_order": "Créer la commande",
+  "orders.add_product": "Ajouter",
+
+  // Invoices
   "invoices.title": "Factures",
   "invoices.subtitle": "Générez et gérez les factures",
   "invoices.invoice_number": "N° Facture",
@@ -170,6 +295,8 @@ export const fr: Record<string, string> = {
   "invoices.remaining": "Reste à payer",
   "invoices.received": "Montant reçu",
   "invoices.payment_mode": "Mode de paiement",
+
+  // Inventory
   "inventory.title": "Inventaire",
   "inventory.subtitle": "Suivi des stocks et mouvements",
   "inventory.movement": "Mouvement",
@@ -185,10 +312,16 @@ export const fr: Record<string, string> = {
   "inventory.entry": "Entrée",
   "inventory.exit": "Sortie",
   "inventory.supplier": "Fournisseur",
+  "inventory.low": "Bas",
+  "inventory.ok": "OK",
+
+  // Suppliers
   "suppliers.title": "Fournisseurs",
   "suppliers.subtitle": "Répertoire de vos fournisseurs",
   "suppliers.new_supplier": "Nouveau fournisseur",
   "suppliers.edit_supplier": "Modifier le fournisseur",
+
+  // Deliveries
   "deliveries.title": "Livraisons",
   "deliveries.subtitle": "Planifiez et suivez les livraisons",
   "deliveries.new_delivery": "Nouvelle livraison",
@@ -199,6 +332,9 @@ export const fr: Record<string, string> = {
   "deliveries.delivered": "Livrée",
   "deliveries.failed": "Échec",
   "deliveries.order_confirmed": "Commande (confirmée)",
+  "deliveries.order": "Commande",
+
+  // Transactions
   "transactions.title": "Journal des transactions",
   "transactions.subtitle": "Suivi des recettes et dépenses",
   "transactions.new_transaction": "Nouvelle transaction",
@@ -209,6 +345,8 @@ export const fr: Record<string, string> = {
   "transactions.expenses": "Dépenses",
   "transactions.balance": "Solde",
   "transactions.all_months": "Tous les mois",
+
+  // Reporting
   "reporting.title": "Reporting financier",
   "reporting.subtitle": "Tableaux de bord et analyses financières",
   "reporting.total_revenues": "Recettes totales",
@@ -217,6 +355,10 @@ export const fr: Record<string, string> = {
   "reporting.unpaid_invoices": "Factures impayées",
   "reporting.monthly_ca": "CA mensuel",
   "reporting.expenses_by_category": "Dépenses par catégorie",
+  "reporting.unpaid_list": "Factures impayées",
+  "reporting.due_date": "Échéance",
+
+  // Employees
   "employees.title": "Gestion des employés",
   "employees.subtitle": "Répertoire et gestion du personnel",
   "employees.new_employee": "Nouvel employé",
@@ -237,6 +379,11 @@ export const fr: Record<string, string> = {
   "employees.status_suspended": "Suspendu",
   "employees.delete_title": "Supprimer l'employé",
   "employees.delete_desc": "Êtes-vous sûr de vouloir supprimer définitivement cet employé ? Cette action est irréversible.",
+  "employees.deleted": "Employé supprimé",
+  "employees.list_title": "Liste des Employés",
+  "employees.performance": "Performance",
+
+  // Attendance
   "attendance.title": "Pointage des présences",
   "attendance.subtitle": "Suivi quotidien des présences du personnel",
   "attendance.present": "Présent",
@@ -248,6 +395,10 @@ export const fr: Record<string, string> = {
   "attendance.start_date": "Date début",
   "attendance.end_date": "Date fin",
   "attendance.reason": "Motif",
+  "attendance.present_count": "présents",
+  "attendance.mission_leave_reason": "Raison de la mission/congé",
+
+  // Payroll
   "payroll.title": "Gestion de la paie",
   "payroll.subtitle": "Calcul et suivi des salaires",
   "payroll.individual": "Fiche individuelle",
@@ -260,6 +411,15 @@ export const fr: Record<string, string> = {
   "payroll.net": "Net",
   "payroll.mark_paid": "Marquer payé",
   "payroll.waiting": "En attente",
+  "payroll.generate_payslip": "Générer une fiche de paie",
+  "payroll.month": "Mois",
+  "payroll.year": "Année",
+  "payroll.gross_salary": "Salaire brut",
+  "payroll.cnps": "CNPS (2.8%)",
+  "payroll.tax": "Impôt (~11%)",
+  "payroll.generate": "Générer",
+
+  // Logs
   "logs.title": "Logs Système",
   "logs.subtitle": "Historique de toutes les actions effectuées dans l'ERP",
   "logs.all_actions": "Toutes les actions",
@@ -269,6 +429,9 @@ export const fr: Record<string, string> = {
   "logs.action": "Action",
   "logs.entity_type": "Type",
   "logs.entity_id": "ID Entité",
+  "logs.details": "Détails",
+
+  // Information
   "info.title": "AgroConnect SARL",
   "info.subtitle": "Connecter les producteurs agricoles camerounais aux marchés urbains grâce à une distribution fiable, traçable et équitable.",
   "info.mission_title": "Notre Mission",
@@ -276,13 +439,19 @@ export const fr: Record<string, string> = {
   "info.features_title": "Ce que nous offrons",
   "info.timeline_title": "Notre parcours",
   "info.contact_title": "Contactez-nous",
+
+  // Statuses
   "status.en_attente": "En attente",
   "status.confirmee": "Confirmée",
+  "status.confirme": "Confirmée",
   "status.en_preparation": "En préparation",
   "status.livree": "Livrée",
+  "status.livre": "Livrée",
   "status.annulee": "Annulée",
+  "status.annule": "Annulée",
   "status.en_cours": "En cours",
   "status.echouee": "Échouée",
+  "status.echoue": "Échouée",
   "status.paye": "Payée",
   "status.impaye": "Impayée",
   "status.partiel": "Partielle",
@@ -292,4 +461,94 @@ export const fr: Record<string, string> = {
   "status.mission": "Mission",
   "status.actif": "Actif",
   "status.suspendu": "Suspendu",
+  "status.renvoye": "Renvoyé",
+
+  // Roles
+  "role.admin": "Administrateur",
+  "role.commercial": "Commercial",
+  "role.logistique": "Logistique",
+  "role.financier": "Financier",
+  "role.rh": "Ressources Humaines",
+  "role.livreur": "Livreur",
+  "role.techadmin": "Tech Admin",
+
+  // Departments
+  "dept.direction": "Direction",
+  "dept.commercial": "Commercial",
+  "dept.logistique": "Logistique",
+  "dept.finance": "Finance",
+  "dept.rh": "RH",
+  "dept.livraison": "Livraison",
+
+  // Months
+  "month.1": "Janvier",
+  "month.2": "Février",
+  "month.3": "Mars",
+  "month.4": "Avril",
+  "month.5": "Mai",
+  "month.6": "Juin",
+  "month.7": "Juillet",
+  "month.8": "Août",
+  "month.9": "Septembre",
+  "month.10": "Octobre",
+  "month.11": "Novembre",
+  "month.12": "Décembre",
+
+  // Todo
+  "todo.title": "To-Do",
+  "todo.new_task": "Nouvelle tâche",
+  "todo.task_title": "Titre de la tâche",
+  "todo.task_desc": "Description (optionnel)",
+  "todo.priority_high": "Haute",
+  "todo.priority_medium": "Moyenne",
+  "todo.priority_low": "Basse",
+  "todo.status_todo": "À faire",
+  "todo.status_in_progress": "En cours",
+  "todo.status_done": "Terminé",
+  "todo.no_tasks": "Aucune tâche en cours",
+  "todo.done_recent": "Terminées récemment",
+  "todo.due_date": "Échéance",
+
+  // Splash
+  "splash.subtitle": "Solution ERP — Distribution Agroalimentaire",
+
+  // Alerts
+  "alert.stock_critical": "Stock critique",
+  "alert.units_remaining": "unités restantes",
+  "alert.unpaid_since": "impayée depuis",
+  "alert.days": "jours",
+  "alert.delivery_late": "en retard",
+  "alert.leave_request": "Demande de congé en attente",
+
+  // Error
+  "error.generic": "Erreur",
+  "error.not_found": "Page non trouvée",
+  "error.not_found_desc": "Désolé, la page que vous cherchez n'existe pas.",
+  "error.back_home": "Retour à l'accueil",
+
+  // Order status actions
+  "order_action.en_attente": "Confirmer",
+  "order_action.confirmee": "Préparer",
+  "order_action.en_preparation": "Marquer livrée",
+
+  // Movement types
+  "movement.entree": "↓ Entrée",
+  "movement.sortie": "↑ Sortie",
+
+  // Client types
+  "client_type.pro": "Professionnel",
+  "client_type.particulier": "Particulier",
+
+  // Transaction categories
+  "txn_cat.ventes": "Ventes",
+  "txn_cat.achats_fournisseurs": "Achats fournisseurs",
+  "txn_cat.salaires": "Salaires",
+  "txn_cat.loyer": "Loyer",
+  "txn_cat.transport": "Transport",
+  "txn_cat.electricite": "Électricité",
+  "txn_cat.eau": "Eau",
+  "txn_cat.telephone": "Téléphone",
+  "txn_cat.maintenance": "Maintenance",
+  "txn_cat.taxes": "Taxes",
+  "txn_cat.autres": "Autres",
 };

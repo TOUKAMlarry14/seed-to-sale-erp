@@ -17,7 +17,7 @@ import { Loader2, Moon, Sun, Globe, RotateCcw } from "lucide-react";
 export function Parametres() {
   const { profile, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { lang, setLang } = useTranslation();
+  const { t, lang, setLang } = useTranslation();
   const { toast } = useToast();
   const [password, setPassword] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -25,20 +25,20 @@ export function Parametres() {
 
   const handlePasswordChange = async () => {
     if (password.length < 6) {
-      toast({ title: "Erreur", description: "Le mot de passe doit avoir au moins 6 caractères.", variant: "destructive" });
+      toast({ title: t("error.generic"), description: t("settings.pw_min_6"), variant: "destructive" });
       return;
     }
     if (password !== confirmPw) {
-      toast({ title: "Erreur", description: "Les mots de passe ne correspondent pas.", variant: "destructive" });
+      toast({ title: t("error.generic"), description: t("settings.pw_mismatch"), variant: "destructive" });
       return;
     }
     setSaving(true);
     const { error } = await supabase.auth.updateUser({ password });
     setSaving(false);
     if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("error.generic"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Mot de passe modifié avec succès" });
+      toast({ title: t("settings.pw_success") });
       setPassword("");
       setConfirmPw("");
     }
@@ -47,51 +47,36 @@ export function Parametres() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-heading font-bold">Paramètres</h1>
-        <p className="text-sm text-muted-foreground">Configuration de votre compte et de l'application</p>
+        <h1 className="text-2xl font-heading font-bold">{t("settings.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("settings.subtitle")}</p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile">Profil & Sécurité</TabsTrigger>
-          <TabsTrigger value="preferences">Préférences</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="support">Support & Aide</TabsTrigger>
+          <TabsTrigger value="profile">{t("settings.profile")}</TabsTrigger>
+          <TabsTrigger value="preferences">{t("settings.preferences")}</TabsTrigger>
+          <TabsTrigger value="notifications">{t("settings.notifications")}</TabsTrigger>
+          <TabsTrigger value="support">{t("settings.support")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Informations personnelles</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-lg">{t("settings.personal_info")}</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <div>
-                <Label>Nom complet</Label>
-                <Input value={profile?.full_name || ""} disabled className="bg-muted" />
-              </div>
-              <div>
-                <Label>Email</Label>
-                <Input value={user?.email || ""} disabled className="bg-muted" />
-              </div>
+              <div><Label>{t("settings.full_name")}</Label><Input value={profile?.full_name || ""} disabled className="bg-muted" /></div>
+              <div><Label>{t("common.email")}</Label><Input value={user?.email || ""} disabled className="bg-muted" /></div>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Modifier le mot de passe</CardTitle>
-              <CardDescription>Choisissez un nouveau mot de passe sécurisé</CardDescription>
+              <CardTitle className="text-lg">{t("settings.change_password")}</CardTitle>
+              <CardDescription>{t("settings.change_password_desc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div>
-                <Label>Nouveau mot de passe</Label>
-                <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
-              </div>
-              <div>
-                <Label>Confirmer</Label>
-                <Input type="password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} placeholder="••••••••" />
-              </div>
+              <div><Label>{t("settings.new_password")}</Label><Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" /></div>
+              <div><Label>{t("settings.confirm_pw")}</Label><Input type="password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} placeholder="••••••••" /></div>
               <Button onClick={handlePasswordChange} disabled={saving || !password}>
-                {saving && <Loader2 className="h-4 w-4 animate-spin mr-1" />}Changer le mot de passe
+                {saving && <Loader2 className="h-4 w-4 animate-spin mr-1" />}{t("settings.btn_change_pw")}
               </Button>
             </CardContent>
           </Card>
@@ -100,31 +85,30 @@ export function Parametres() {
         <TabsContent value="preferences" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Thème</CardTitle>
-              <CardDescription>Choisissez entre le mode clair et sombre</CardDescription>
+              <CardTitle className="text-lg">{t("settings.theme_title")}</CardTitle>
+              <CardDescription>{t("settings.theme_desc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                  <span className="text-sm">{theme === "dark" ? "Mode sombre" : "Mode clair"}</span>
+                  <span className="text-sm">{theme === "dark" ? t("theme.dark") : t("theme.light")}</span>
                 </div>
                 <Switch checked={theme === "dark"} onCheckedChange={toggleTheme} />
               </div>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Langue</CardTitle>
-              <CardDescription>Choisissez la langue de l'interface</CardDescription>
+              <CardTitle className="text-lg">{t("settings.lang_title")}</CardTitle>
+              <CardDescription>{t("settings.lang_desc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
                 <Globe className="h-4 w-4" />
                 <div className="flex gap-2">
-                  <Button variant={lang === "fr" ? "default" : "outline"} size="sm" onClick={() => setLang("fr")}>🇫🇷 Français</Button>
-                  <Button variant={lang === "en" ? "default" : "outline"} size="sm" onClick={() => setLang("en")}>🇬🇧 English</Button>
+                  <Button variant={lang === "fr" ? "default" : "outline"} size="sm" onClick={() => setLang("fr")}>🇫🇷 {t("lang.fr")}</Button>
+                  <Button variant={lang === "en" ? "default" : "outline"} size="sm" onClick={() => setLang("en")}>🇬🇧 {t("lang.en")}</Button>
                 </div>
               </div>
             </CardContent>
@@ -134,21 +118,18 @@ export function Parametres() {
         <TabsContent value="notifications" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Paramètres de notifications</CardTitle>
-              <CardDescription>Configurez les alertes que vous souhaitez recevoir</CardDescription>
+              <CardTitle className="text-lg">{t("settings.notif_title")}</CardTitle>
+              <CardDescription>{t("settings.notif_desc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {[
-                { label: "Alertes stocks bas", desc: "Notification quand un produit atteint le seuil minimum" },
-                { label: "Factures impayées", desc: "Alerte pour les factures non réglées depuis +7 jours" },
-                { label: "Nouvelles commandes", desc: "Notification à chaque nouvelle commande reçue" },
-                { label: "Livraisons en retard", desc: "Alerte quand une livraison dépasse la date prévue" },
+                { label: t("settings.low_stock_alert"), desc: t("settings.low_stock_desc") },
+                { label: t("settings.unpaid_alert"), desc: t("settings.unpaid_desc") },
+                { label: t("settings.new_order_alert"), desc: t("settings.new_order_desc") },
+                { label: t("settings.late_delivery_alert"), desc: t("settings.late_delivery_desc") },
               ].map((notif, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">{notif.label}</p>
-                    <p className="text-xs text-muted-foreground">{notif.desc}</p>
-                  </div>
+                  <div><p className="text-sm font-medium">{notif.label}</p><p className="text-xs text-muted-foreground">{notif.desc}</p></div>
                   <Switch defaultChecked />
                 </div>
               ))}
@@ -158,47 +139,27 @@ export function Parametres() {
 
         <TabsContent value="support" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">FAQ — Questions fréquentes</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-lg">{t("settings.faq_title")}</CardTitle></CardHeader>
             <CardContent>
               <Accordion type="single" collapsible>
-                <AccordionItem value="q1">
-                  <AccordionTrigger>Comment créer une commande ?</AccordionTrigger>
-                  <AccordionContent>Rendez-vous dans le module Ventes → Commandes. Cliquez sur "Nouvelle commande", sélectionnez un client, ajoutez les produits et validez.</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="q2">
-                  <AccordionTrigger>Comment générer une fiche de paie ?</AccordionTrigger>
-                  <AccordionContent>Allez dans RH → Paie. Cliquez sur "Fiche individuelle" pour un employé, ou "Générer tout le mois" pour l'ensemble. Le calcul CNPS (2.8%) et impôts est automatique.</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="q3">
-                  <AccordionTrigger>Comment suivre les stocks ?</AccordionTrigger>
-                  <AccordionContent>Le module Stocks → Inventaire affiche l'état du stock en temps réel. Les produits en alerte sont signalés en rouge. Utilisez "Mouvement" pour enregistrer les entrées/sorties.</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="q4">
-                  <AccordionTrigger>Comment contacter le support ?</AccordionTrigger>
-                  <AccordionContent>Envoyez un email à support@agroconnect.cm ou utilisez le chatbot IA (bouton vert en bas à droite) pour une aide immédiate.</AccordionContent>
-                </AccordionItem>
+                <AccordionItem value="q1"><AccordionTrigger>{t("settings.faq_q1")}</AccordionTrigger><AccordionContent>{t("settings.faq_a1")}</AccordionContent></AccordionItem>
+                <AccordionItem value="q2"><AccordionTrigger>{t("settings.faq_q2")}</AccordionTrigger><AccordionContent>{t("settings.faq_a2")}</AccordionContent></AccordionItem>
+                <AccordionItem value="q3"><AccordionTrigger>{t("settings.faq_q3")}</AccordionTrigger><AccordionContent>{t("settings.faq_a3")}</AccordionContent></AccordionItem>
+                <AccordionItem value="q4"><AccordionTrigger>{t("settings.faq_q4")}</AccordionTrigger><AccordionContent>{t("settings.faq_a4")}</AccordionContent></AccordionItem>
               </Accordion>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Visite guidée</CardTitle>
-              <CardDescription>Relancez la présentation interactive de l'ERP</CardDescription>
+              <CardTitle className="text-lg">{t("settings.tour_title")}</CardTitle>
+              <CardDescription>{t("settings.tour_desc")}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" onClick={resetOnboardingTour}>
-                <RotateCcw className="h-4 w-4 mr-2" />Relancer la visite guidée
-              </Button>
+              <Button variant="outline" onClick={resetOnboardingTour}><RotateCcw className="h-4 w-4 mr-2" />{t("settings.restart_tour")}</Button>
             </CardContent>
           </Card>
-
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Contact support</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-lg">{t("settings.contact_title")}</CardTitle></CardHeader>
             <CardContent className="space-y-1">
               <p className="text-sm">📧 support@agroconnect.cm</p>
               <p className="text-sm">📞 +237 6XX XXX XXX</p>
