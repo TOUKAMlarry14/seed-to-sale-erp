@@ -1,5 +1,12 @@
 export const en: Record<string, string> = {
+  // App
   "app.name": "AgroConnect ERP",
+  "app.company": "AgroConnect SARL",
+  "app.erp_subtitle": "ERP Solution — Agri-food Distribution",
+  "app.copyright": "© 2026 AgroConnect SARL — Douala, Cameroon",
+  "app.user": "User",
+
+  // Navigation sections
   "nav.dashboard": "Dashboard",
   "nav.catalogue": "Catalogue",
   "nav.clients": "Clients",
@@ -23,6 +30,8 @@ export const en: Record<string, string> = {
   "section.finance": "Finance (M3)",
   "section.hr": "Human Resources (M4)",
   "section.system": "System",
+
+  // Auth
   "auth.login": "Sign In",
   "auth.signup": "Create Account",
   "auth.logout": "Sign Out",
@@ -41,8 +50,10 @@ export const en: Record<string, string> = {
   "auth.send_link": "Send link",
   "auth.back_login": "Back to login",
   "auth.loading": "Loading...",
-  "auth.erp_subtitle": "ERP Solution — Agri-food Distribution",
-  "auth.copyright": "© 2026 AgroConnect SARL — Douala, Cameroon",
+  "auth.show_password": "Show password",
+  "auth.hide_password": "Hide password",
+
+  // Common
   "common.add": "Add",
   "common.edit": "Edit",
   "common.delete": "Delete",
@@ -71,29 +82,52 @@ export const en: Record<string, string> = {
   "common.notes": "Notes",
   "common.no_data": "No data",
   "common.results": "result(s)",
+  "common.select": "Select",
+  "common.optional": "Optional",
+  "common.product": "Product",
+  "common.quantity": "Quantity",
+  "common.total": "Total",
+  "common.category": "Category",
+  "common.reason": "Reason",
+  "common.yes_delete": "Yes, delete",
+  "common.close": "Close",
+
+  // Confirm dialog
   "confirm.title": "Confirmation",
   "confirm.delete_message": "Are you sure you want to delete this item? This action cannot be undone.",
+  "confirm.action_message": "Are you sure you want to perform this action? This action cannot be undone.",
   "confirm.yes": "Yes, delete",
   "confirm.no": "Cancel",
-  "theme.light": "Light",
-  "theme.dark": "Dark",
+
+  // Theme & Language
+  "theme.light": "Light mode",
+  "theme.dark": "Dark mode",
+  "theme.switch_light": "Switch to light mode",
+  "theme.switch_dark": "Switch to dark mode",
   "lang.fr": "Français",
   "lang.en": "English",
+  "lang.switch_en": "Switch to English",
+  "lang.switch_fr": "Switch to French",
+
+  // Settings
+  "settings.title": "Settings",
+  "settings.subtitle": "Configure your account and application",
   "settings.profile": "Profile & Security",
   "settings.preferences": "Preferences",
   "settings.notifications": "Notifications",
   "settings.support": "Support & Help",
-  "settings.title": "Settings",
-  "settings.subtitle": "Configure your account and application",
   "settings.personal_info": "Personal information",
+  "settings.full_name": "Full name",
   "settings.change_password": "Change password",
   "settings.change_password_desc": "Choose a new secure password",
   "settings.new_password": "New password",
   "settings.confirm_pw": "Confirm",
+  "settings.btn_change_pw": "Change password",
+  "settings.pw_min_6": "Password must be at least 6 characters.",
+  "settings.pw_mismatch": "Passwords do not match.",
+  "settings.pw_success": "Password changed successfully",
   "settings.theme_title": "Theme",
   "settings.theme_desc": "Choose between light and dark mode",
-  "settings.dark_mode": "Dark mode",
-  "settings.light_mode": "Light mode",
   "settings.lang_title": "Language",
   "settings.lang_desc": "Choose the interface language",
   "settings.notif_title": "Notification settings",
@@ -107,17 +141,31 @@ export const en: Record<string, string> = {
   "settings.late_delivery_alert": "Late deliveries",
   "settings.late_delivery_desc": "Alert when a delivery exceeds its scheduled date",
   "settings.faq_title": "FAQ — Frequently Asked Questions",
+  "settings.faq_q1": "How to create an order?",
+  "settings.faq_a1": "Go to Sales → Orders. Click \"New order\", select a client, add products and confirm.",
+  "settings.faq_q2": "How to generate a payslip?",
+  "settings.faq_a2": "Go to HR → Payroll. Click \"Individual payslip\" for one employee, or \"Generate all for month\" for everyone. CNPS (2.8%) and tax calculations are automatic.",
+  "settings.faq_q3": "How to track stock?",
+  "settings.faq_a3": "The Stocks → Inventory module shows real-time stock levels. Products on alert are highlighted in red. Use \"Movement\" to record entries/exits.",
+  "settings.faq_q4": "How to contact support?",
+  "settings.faq_a4": "Send an email to support@agroconnect.cm or use the AI chatbot (green button bottom right) for instant help.",
   "settings.tour_title": "Guided Tour",
   "settings.tour_desc": "Restart the interactive ERP presentation",
   "settings.restart_tour": "Restart guided tour",
   "settings.contact_title": "Contact support",
+
+  // Notifications
   "notifications.title": "Notifications",
   "notifications.empty": "No notifications",
   "notifications.mark_all": "Mark all as read",
+
+  // Chat
   "chat.title": "AgroConnect Assistant",
   "chat.placeholder": "Ask your question...",
   "chat.welcome": "Hello! I'm AgroConnect's AI assistant. How can I help you?",
   "chat.powered_by": "Powered by AI",
+
+  // Dashboard
   "dashboard.title": "Dashboard — General Management",
   "dashboard.subtitle": "Overview of AgroConnect activity",
   "dashboard.monthly_revenue": "Monthly Revenue",
@@ -130,6 +178,74 @@ export const en: Record<string, string> = {
   "dashboard.expenses_chart": "Expense Distribution",
   "dashboard.orders_chart": "Weekly Orders",
   "dashboard.alerts_title": "Alerts",
+  "dashboard.products": "products",
+  "dashboard.late": "late",
+  "dashboard.revenue": "Revenue",
+
+  // Dashboard - Commercial
+  "dashboard.commercial_title": "Dashboard — Commercial",
+  "dashboard.commercial_subtitle": "Sales and client tracking",
+  "dashboard.active_clients": "Active clients",
+  "dashboard.top_products": "Top 5 products sold",
+  "dashboard.weekly_orders": "Weekly Orders",
+
+  // Dashboard - Logistique
+  "dashboard.logistique_title": "Dashboard — Logistics",
+  "dashboard.logistique_subtitle": "Stock and delivery tracking",
+  "dashboard.out_of_stock": "Out of stock",
+  "dashboard.weekly_entries": "Entries this week",
+  "dashboard.delivery_rate": "Delivery success rate",
+  "dashboard.stock_entries_week": "Stock entries this week",
+  "dashboard.top_restock": "Top 5 — To restock",
+
+  // Dashboard - Finance
+  "dashboard.finance_title": "Dashboard — Finance",
+  "dashboard.finance_subtitle": "Cash flow and financial tracking",
+  "dashboard.month_expenses": "Monthly Expenses",
+  "dashboard.cash_evolution": "Cash flow trend (6 months)",
+  "dashboard.balance": "Balance",
+
+  // Dashboard - RH
+  "dashboard.rh_title": "Dashboard — Human Resources",
+  "dashboard.rh_subtitle": "Staff and payroll tracking",
+  "dashboard.present_today": "Present today",
+  "dashboard.ongoing_leaves": "Ongoing leaves",
+  "dashboard.payroll_total": "Total payroll",
+  "dashboard.presence_rate": "Presence rate",
+  "dashboard.weekly_presence": "Weekly presence rate",
+  "dashboard.leaves_pending": "Pending leaves",
+  "dashboard.approved": "Approved",
+  "dashboard.pending": "Pending",
+
+  // Dashboard - Livreur
+  "dashboard.livreur_title": "My deliveries today",
+  "dashboard.livreur_subtitle": "Assigned deliveries",
+  "dashboard.total_day": "Total today",
+  "dashboard.delivered_count": "Delivered",
+
+  // Chart data labels
+  "chart.purchases": "Purchases",
+  "chart.salaries": "Salaries",
+  "chart.transport": "Transport",
+  "chart.rent": "Rent",
+  "chart.other": "Other",
+  "chart.orders": "orders",
+  "chart.entries": "entries",
+  "chart.rate": "rate",
+  "chart.week": "Week",
+  "chart.month.oct": "Oct",
+  "chart.month.nov": "Nov",
+  "chart.month.dec": "Dec",
+  "chart.month.jan": "Jan",
+  "chart.month.feb": "Feb",
+  "chart.month.mar": "Mar",
+  "chart.day.mon": "Mon",
+  "chart.day.tue": "Tue",
+  "chart.day.wed": "Wed",
+  "chart.day.thu": "Thu",
+  "chart.day.fri": "Fri",
+
+  // Catalogue
   "catalogue.title": "Product Catalogue",
   "catalogue.subtitle": "Manage your agri-food product catalogue",
   "catalogue.new_product": "New product",
@@ -140,11 +256,16 @@ export const en: Record<string, string> = {
   "catalogue.sell_price": "Selling price",
   "catalogue.stock": "Stock",
   "catalogue.stock_min": "Minimum stock",
+
+  // Clients
   "clients.title": "Client Management",
   "clients.subtitle": "Directory and tracking of your clients",
   "clients.new_client": "New client",
   "clients.edit_client": "Edit client",
   "clients.balance": "Balance",
+  "clients.select_client": "Select a client",
+
+  // Orders
   "orders.title": "Orders",
   "orders.subtitle": "Create and track customer orders",
   "orders.new_order": "New order",
@@ -160,6 +281,10 @@ export const en: Record<string, string> = {
   "orders.cancel_title": "Cancel order",
   "orders.cancel_desc": "Are you sure you want to cancel this order?",
   "orders.cancel_confirm": "Yes, cancel",
+  "orders.create_order": "Create order",
+  "orders.add_product": "Add",
+
+  // Invoices
   "invoices.title": "Invoices",
   "invoices.subtitle": "Generate and manage invoices",
   "invoices.invoice_number": "Invoice #",
@@ -170,6 +295,8 @@ export const en: Record<string, string> = {
   "invoices.remaining": "Remaining",
   "invoices.received": "Amount received",
   "invoices.payment_mode": "Payment method",
+
+  // Inventory
   "inventory.title": "Inventory",
   "inventory.subtitle": "Stock tracking and movements",
   "inventory.movement": "Movement",
@@ -185,10 +312,16 @@ export const en: Record<string, string> = {
   "inventory.entry": "Entry",
   "inventory.exit": "Exit",
   "inventory.supplier": "Supplier",
+  "inventory.low": "Low",
+  "inventory.ok": "OK",
+
+  // Suppliers
   "suppliers.title": "Suppliers",
   "suppliers.subtitle": "Directory of your suppliers",
   "suppliers.new_supplier": "New supplier",
   "suppliers.edit_supplier": "Edit supplier",
+
+  // Deliveries
   "deliveries.title": "Deliveries",
   "deliveries.subtitle": "Plan and track deliveries",
   "deliveries.new_delivery": "New delivery",
@@ -199,6 +332,9 @@ export const en: Record<string, string> = {
   "deliveries.delivered": "Delivered",
   "deliveries.failed": "Failed",
   "deliveries.order_confirmed": "Order (confirmed)",
+  "deliveries.order": "Order",
+
+  // Transactions
   "transactions.title": "Transaction Journal",
   "transactions.subtitle": "Revenue and expense tracking",
   "transactions.new_transaction": "New transaction",
@@ -209,6 +345,8 @@ export const en: Record<string, string> = {
   "transactions.expenses": "Expenses",
   "transactions.balance": "Balance",
   "transactions.all_months": "All months",
+
+  // Reporting
   "reporting.title": "Financial Reporting",
   "reporting.subtitle": "Dashboards and financial analysis",
   "reporting.total_revenues": "Total Revenue",
@@ -217,6 +355,10 @@ export const en: Record<string, string> = {
   "reporting.unpaid_invoices": "Unpaid Invoices",
   "reporting.monthly_ca": "Monthly Revenue",
   "reporting.expenses_by_category": "Expenses by Category",
+  "reporting.unpaid_list": "Unpaid Invoices",
+  "reporting.due_date": "Due date",
+
+  // Employees
   "employees.title": "Employee Management",
   "employees.subtitle": "Staff directory and management",
   "employees.new_employee": "New employee",
@@ -237,6 +379,11 @@ export const en: Record<string, string> = {
   "employees.status_suspended": "Suspended",
   "employees.delete_title": "Delete employee",
   "employees.delete_desc": "Are you sure you want to permanently delete this employee? This action cannot be undone.",
+  "employees.deleted": "Employee deleted",
+  "employees.list_title": "Employee List",
+  "employees.performance": "Performance",
+
+  // Attendance
   "attendance.title": "Attendance Tracking",
   "attendance.subtitle": "Daily staff attendance monitoring",
   "attendance.present": "Present",
@@ -248,6 +395,10 @@ export const en: Record<string, string> = {
   "attendance.start_date": "Start date",
   "attendance.end_date": "End date",
   "attendance.reason": "Reason",
+  "attendance.present_count": "present",
+  "attendance.mission_leave_reason": "Reason for mission/leave",
+
+  // Payroll
   "payroll.title": "Payroll Management",
   "payroll.subtitle": "Salary calculation and tracking",
   "payroll.individual": "Individual payslip",
@@ -260,6 +411,15 @@ export const en: Record<string, string> = {
   "payroll.net": "Net",
   "payroll.mark_paid": "Mark as paid",
   "payroll.waiting": "Pending",
+  "payroll.generate_payslip": "Generate a payslip",
+  "payroll.month": "Month",
+  "payroll.year": "Year",
+  "payroll.gross_salary": "Gross salary",
+  "payroll.cnps": "CNPS (2.8%)",
+  "payroll.tax": "Tax (~11%)",
+  "payroll.generate": "Generate",
+
+  // Logs
   "logs.title": "System Logs",
   "logs.subtitle": "History of all actions performed in the ERP",
   "logs.all_actions": "All actions",
@@ -269,6 +429,9 @@ export const en: Record<string, string> = {
   "logs.action": "Action",
   "logs.entity_type": "Type",
   "logs.entity_id": "Entity ID",
+  "logs.details": "Details",
+
+  // Information
   "info.title": "AgroConnect SARL",
   "info.subtitle": "Connecting Cameroonian agricultural producers to urban markets through reliable, traceable and fair distribution.",
   "info.mission_title": "Our Mission",
@@ -276,13 +439,19 @@ export const en: Record<string, string> = {
   "info.features_title": "What We Offer",
   "info.timeline_title": "Our Journey",
   "info.contact_title": "Contact Us",
+
+  // Statuses
   "status.en_attente": "Pending",
   "status.confirmee": "Confirmed",
+  "status.confirme": "Confirmed",
   "status.en_preparation": "In preparation",
   "status.livree": "Delivered",
+  "status.livre": "Delivered",
   "status.annulee": "Cancelled",
+  "status.annule": "Cancelled",
   "status.en_cours": "In progress",
   "status.echouee": "Failed",
+  "status.echoue": "Failed",
   "status.paye": "Paid",
   "status.impaye": "Unpaid",
   "status.partiel": "Partial",
@@ -292,4 +461,94 @@ export const en: Record<string, string> = {
   "status.mission": "Mission",
   "status.actif": "Active",
   "status.suspendu": "Suspended",
+  "status.renvoye": "Terminated",
+
+  // Roles
+  "role.admin": "Administrator",
+  "role.commercial": "Commercial",
+  "role.logistique": "Logistics",
+  "role.financier": "Finance",
+  "role.rh": "Human Resources",
+  "role.livreur": "Driver",
+  "role.techadmin": "Tech Admin",
+
+  // Departments
+  "dept.direction": "Management",
+  "dept.commercial": "Commercial",
+  "dept.logistique": "Logistics",
+  "dept.finance": "Finance",
+  "dept.rh": "HR",
+  "dept.livraison": "Delivery",
+
+  // Months
+  "month.1": "January",
+  "month.2": "February",
+  "month.3": "March",
+  "month.4": "April",
+  "month.5": "May",
+  "month.6": "June",
+  "month.7": "July",
+  "month.8": "August",
+  "month.9": "September",
+  "month.10": "October",
+  "month.11": "November",
+  "month.12": "December",
+
+  // Todo
+  "todo.title": "To-Do",
+  "todo.new_task": "New task",
+  "todo.task_title": "Task title",
+  "todo.task_desc": "Description (optional)",
+  "todo.priority_high": "High",
+  "todo.priority_medium": "Medium",
+  "todo.priority_low": "Low",
+  "todo.status_todo": "To do",
+  "todo.status_in_progress": "In progress",
+  "todo.status_done": "Done",
+  "todo.no_tasks": "No active tasks",
+  "todo.done_recent": "Recently completed",
+  "todo.due_date": "Due date",
+
+  // Splash
+  "splash.subtitle": "ERP Solution — Agri-food Distribution",
+
+  // Alerts
+  "alert.stock_critical": "Critical stock",
+  "alert.units_remaining": "units remaining",
+  "alert.unpaid_since": "unpaid since",
+  "alert.days": "days",
+  "alert.delivery_late": "late",
+  "alert.leave_request": "Leave request pending",
+
+  // Error
+  "error.generic": "Error",
+  "error.not_found": "Page not found",
+  "error.not_found_desc": "Sorry, the page you're looking for doesn't exist.",
+  "error.back_home": "Back to home",
+
+  // Order status actions
+  "order_action.en_attente": "Confirm",
+  "order_action.confirmee": "Prepare",
+  "order_action.en_preparation": "Mark delivered",
+
+  // Movement types
+  "movement.entree": "↓ Entry",
+  "movement.sortie": "↑ Exit",
+
+  // Client types
+  "client_type.pro": "Professional",
+  "client_type.particulier": "Individual",
+
+  // Transaction categories
+  "txn_cat.ventes": "Sales",
+  "txn_cat.achats_fournisseurs": "Supplier purchases",
+  "txn_cat.salaires": "Salaries",
+  "txn_cat.loyer": "Rent",
+  "txn_cat.transport": "Transport",
+  "txn_cat.electricite": "Electricity",
+  "txn_cat.eau": "Water",
+  "txn_cat.telephone": "Phone",
+  "txn_cat.maintenance": "Maintenance",
+  "txn_cat.taxes": "Taxes",
+  "txn_cat.autres": "Other",
 };
