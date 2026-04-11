@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useEmployees } from "@/hooks/useEmployees";
 import { useAttendances, useUpsertAttendance } from "@/hooks/useAttendances";
+import { useTranslation } from "@/contexts/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,21 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, CheckCircle, XCircle, Palmtree, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
-const STATUSES = [
-  { value: "present", label: "Présent", icon: CheckCircle, color: "text-success" },
-  { value: "absent", label: "Absent", icon: XCircle, color: "text-destructive" },
-  { value: "conge", label: "Congé", icon: Palmtree, color: "text-warning" },
-  { value: "mission", label: "Mission", icon: Briefcase, color: "text-primary" },
-];
-
-const DEPARTMENTS = ["Direction", "Commercial", "Logistique", "Finance", "RH", "Livraison"];
-
 export function Presences() {
+  const { t } = useTranslation();
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const { data: employees, isLoading: le } = useEmployees();
   const { data: attendances, isLoading: la } = useAttendances(date);
@@ -32,6 +24,15 @@ export function Presences() {
   const [modalData, setModalData] = useState<{ empId: string; status: string } | null>(null);
   const [modalForm, setModalForm] = useState({ start_date: "", end_date: "", reason: "" });
 
+  const STATUSES = [
+    { value: "present", label: t("attendance.present"), icon: CheckCircle, color: "text-success" },
+    { value: "absent", label: t("attendance.absent"), icon: XCircle, color: "text-destructive" },
+    { value: "conge", label: t("attendance.leave"), icon: Palmtree, color: "text-warning" },
+    { value: "mission", label: t("attendance.mission"), icon: Briefcase, color: "text-primary" },
+  ];
+
+  const DEPARTMENTS = ["Direction", "Commercial", "Logistique", "Finance", "RH", "Livraison"];
+
   const activeEmployees = employees?.filter(e => e.is_active) || [];
   const filteredEmployees = activeEmployees.filter(e => deptFilter === "all" || e.department === deptFilter);
   const getStatus = (empId: string) => attendances?.find(a => a.employee_id === empId)?.status || null;
@@ -39,7 +40,6 @@ export function Presences() {
 
   const markAttendance = (empId: string, status: string) => {
     const current = getStatus(empId);
-    // Toggle: if same status clicked, remove attendance
     if (current === status) {
       const attId = getAttendanceId(empId);
       if (attId) {
@@ -49,7 +49,6 @@ export function Presences() {
       }
       return;
     }
-    // For mission/conge, open modal
     if (status === "mission" || status === "conge") {
       setModalData({ empId, status });
       setModalForm({ start_date: date, end_date: date, reason: "" });
@@ -78,17 +77,17 @@ export function Presences() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-heading font-bold">Pointage des présences</h1>
-          <p className="text-sm text-muted-foreground">Suivi quotidien des présences du personnel</p>
+          <h1 className="text-2xl font-heading font-bold">{t("attendance.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("attendance.subtitle")}</p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline" className="text-sm">{present}/{total} présents</Badge>
+          <Badge variant="outline" className="text-sm">{present}/{total} {t("attendance.present_count")}</Badge>
           <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-40" />
         </div>
       </div>
 
       <div className="flex gap-2 flex-wrap">
-        <Button variant={deptFilter === "all" ? "default" : "outline"} size="sm" onClick={() => setDeptFilter("all")}>Tout</Button>
+        <Button variant={deptFilter === "all" ? "default" : "outline"} size="sm" onClick={() => setDeptFilter("all")}>{t("common.all")}</Button>
         {DEPARTMENTS.map(d => (
           <Button key={d} variant={deptFilter === d ? "default" : "outline"} size="sm" onClick={() => setDeptFilter(d)}>{d}</Button>
         ))}
@@ -128,20 +127,19 @@ export function Presences() {
         })}
       </div>
 
-      {/* Modal for Mission/Congé */}
       <Dialog open={!!modalData} onOpenChange={(v) => { if (!v) setModalData(null); }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{modalData?.status === "mission" ? "Déclarer une mission" : "Déclarer un congé"}</DialogTitle>
+            <DialogTitle>{modalData?.status === "mission" ? t("attendance.declare_mission") : t("attendance.declare_leave")}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>Date début</Label><Input type="date" value={modalForm.start_date} onChange={e => setModalForm({ ...modalForm, start_date: e.target.value })} /></div>
-              <div><Label>Date fin</Label><Input type="date" value={modalForm.end_date} onChange={e => setModalForm({ ...modalForm, end_date: e.target.value })} /></div>
+              <div><Label>{t("attendance.start_date")}</Label><Input type="date" value={modalForm.start_date} onChange={e => setModalForm({ ...modalForm, start_date: e.target.value })} /></div>
+              <div><Label>{t("attendance.end_date")}</Label><Input type="date" value={modalForm.end_date} onChange={e => setModalForm({ ...modalForm, end_date: e.target.value })} /></div>
             </div>
-            <div><Label>Motif</Label><Input value={modalForm.reason} onChange={e => setModalForm({ ...modalForm, reason: e.target.value })} placeholder="Raison de la mission/congé" /></div>
+            <div><Label>{t("attendance.reason")}</Label><Input value={modalForm.reason} onChange={e => setModalForm({ ...modalForm, reason: e.target.value })} placeholder={t("attendance.mission_leave_reason")} /></div>
             <Button onClick={handleModalSubmit} disabled={upsert.isPending}>
-              {upsert.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}Enregistrer
+              {upsert.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}{t("common.save")}
             </Button>
           </div>
         </DialogContent>

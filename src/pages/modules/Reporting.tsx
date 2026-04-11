@@ -1,5 +1,6 @@
 import { useTransactions } from "@/hooks/useTransactions";
 import { useInvoices } from "@/hooks/useInvoices";
+import { useTranslation } from "@/contexts/I18nContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { CURRENCY } from "@/lib/constants";
 import { Loader2 } from "lucide-react";
@@ -9,6 +10,7 @@ const COLORS = ["hsl(214, 89%, 34%)", "hsl(148, 58%, 26%)", "hsl(38, 92%, 50%)",
 const formatCFA = (v: number) => `${(v / 1000000).toFixed(1)}M`;
 
 export function Reporting() {
+  const { t, lang } = useTranslation();
   const { data: transactions, isLoading: lt } = useTransactions();
   const { data: invoices, isLoading: li } = useInvoices();
 
@@ -20,41 +22,38 @@ export function Reporting() {
   const totalDepenses = depenses.reduce((s, t) => s + Number(t.amount), 0);
   const resultat = totalRecettes - totalDepenses;
 
-  // Group depenses by category
   const depByCategory: Record<string, number> = {};
   depenses.forEach(d => { depByCategory[d.category] = (depByCategory[d.category] || 0) + Number(d.amount); });
   const depPieData = Object.entries(depByCategory).map(([name, value]) => ({ name, value }));
 
-  // Monthly CA (from recettes)
   const monthlyCA: Record<string, number> = {};
   recettes.forEach(r => {
-    const m = new Date(r.date).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
+    const m = new Date(r.date).toLocaleDateString(lang === "en" ? "en-GB" : "fr-FR", { month: "short", year: "2-digit" });
     monthlyCA[m] = (monthlyCA[m] || 0) + Number(r.amount);
   });
   const caData = Object.entries(monthlyCA).map(([mois, ca]) => ({ mois, ca })).slice(-6);
 
-  // Unpaid invoices
   const unpaid = invoices?.filter(i => i.status === "impaye") || [];
   const totalUnpaid = unpaid.reduce((s, i) => s + Number(i.amount), 0);
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-heading font-bold">Reporting financier</h1>
-        <p className="text-sm text-muted-foreground">Tableaux de bord et analyses financières</p>
+        <h1 className="text-2xl font-heading font-bold">{t("reporting.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("reporting.subtitle")}</p>
       </div>
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Card><CardContent className="p-4"><p className="text-[10px] text-muted-foreground">Recettes totales</p><p className="text-lg font-heading font-bold text-success">{totalRecettes.toLocaleString()} {CURRENCY}</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-[10px] text-muted-foreground">Dépenses totales</p><p className="text-lg font-heading font-bold text-destructive">{totalDepenses.toLocaleString()} {CURRENCY}</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-[10px] text-muted-foreground">Résultat net</p><p className={`text-lg font-heading font-bold ${resultat >= 0 ? "text-success" : "text-destructive"}`}>{resultat.toLocaleString()} {CURRENCY}</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-[10px] text-muted-foreground">Factures impayées</p><p className="text-lg font-heading font-bold text-destructive">{unpaid.length} ({totalUnpaid.toLocaleString()} {CURRENCY})</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-[10px] text-muted-foreground">{t("reporting.total_revenues")}</p><p className="text-lg font-heading font-bold text-success">{totalRecettes.toLocaleString()} {CURRENCY}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-[10px] text-muted-foreground">{t("reporting.total_expenses")}</p><p className="text-lg font-heading font-bold text-destructive">{totalDepenses.toLocaleString()} {CURRENCY}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-[10px] text-muted-foreground">{t("reporting.net_result")}</p><p className={`text-lg font-heading font-bold ${resultat >= 0 ? "text-success" : "text-destructive"}`}>{resultat.toLocaleString()} {CURRENCY}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-[10px] text-muted-foreground">{t("reporting.unpaid_invoices")}</p><p className="text-lg font-heading font-bold text-destructive">{unpaid.length} ({totalUnpaid.toLocaleString()} {CURRENCY})</p></CardContent></Card>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         {caData.length > 0 && (
           <Card><CardContent className="pt-6">
-            <p className="text-sm font-heading font-semibold mb-4">CA mensuel</p>
+            <p className="text-sm font-heading font-semibold mb-4">{t("reporting.monthly_ca")}</p>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={caData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -68,7 +67,7 @@ export function Reporting() {
         )}
         {depPieData.length > 0 && (
           <Card><CardContent className="pt-6">
-            <p className="text-sm font-heading font-semibold mb-4">Dépenses par catégorie</p>
+            <p className="text-sm font-heading font-semibold mb-4">{t("reporting.expenses_by_category")}</p>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie data={depPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} className="text-[9px]">
@@ -83,13 +82,13 @@ export function Reporting() {
 
       {unpaid.length > 0 && (
         <Card><CardContent className="pt-6">
-          <p className="text-sm font-heading font-semibold mb-4">Factures impayées</p>
+          <p className="text-sm font-heading font-semibold mb-4">{t("reporting.unpaid_list")}</p>
           <div className="space-y-2">
             {unpaid.slice(0, 10).map(inv => (
               <div key={inv.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
                 <div>
                   <p className="text-sm font-medium">{inv.invoice_number}</p>
-                  <p className="text-xs text-muted-foreground">{(inv as any).clients?.name} — Échéance: {inv.due_date ? new Date(inv.due_date).toLocaleDateString("fr-FR") : "—"}</p>
+                  <p className="text-xs text-muted-foreground">{(inv as any).clients?.name} — {t("reporting.due_date")}: {inv.due_date ? new Date(inv.due_date).toLocaleDateString(lang === "en" ? "en-GB" : "fr-FR") : "—"}</p>
                 </div>
                 <span className="text-sm font-semibold text-destructive">{Number(inv.amount).toLocaleString()} {CURRENCY}</span>
               </div>
