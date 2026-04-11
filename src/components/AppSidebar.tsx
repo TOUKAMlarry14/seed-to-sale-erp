@@ -3,17 +3,18 @@ import { getFilteredNavigation } from "@/lib/navigation";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { LogOut, ChevronRight } from "lucide-react";
+import { useTranslation } from "@/contexts/I18nContext";
 import logoWhiteSrc from "@/assets/logo_agroconnect_blanc.png";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
   SidebarFooter, SidebarHeader, useSidebar,
 } from "@/components/ui/sidebar";
-import { ROLE_LABELS } from "@/lib/constants";
 
 export function AppSidebar() {
   const { roles, profile, signOut } = useAuth();
   const { state } = useSidebar();
+  const { t } = useTranslation();
   const collapsed = state === "collapsed";
   const location = useLocation();
   const sections = getFilteredNavigation(roles);
@@ -31,10 +32,10 @@ export function AppSidebar() {
 
       <SidebarContent className="px-2">
         {sections.map((section) => (
-          <SidebarGroup key={section.label}>
+          <SidebarGroup key={section.labelKey}>
             {!collapsed && (
               <SidebarGroupLabel className="text-sidebar-foreground/50 text-[10px] uppercase tracking-widest font-medium">
-                {section.label}
+                {t(section.labelKey)}
               </SidebarGroupLabel>
             )}
             <SidebarGroupContent>
@@ -51,7 +52,7 @@ export function AppSidebar() {
                           activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                         >
                           <item.icon className="h-4 w-4 shrink-0" />
-                          {!collapsed && <span>{item.title}</span>}
+                          {!collapsed && <span>{t(item.titleKey)}</span>}
                           {!collapsed && isActive && <ChevronRight className="ml-auto h-3 w-3" />}
                         </NavLink>
                       </SidebarMenuButton>
@@ -68,14 +69,14 @@ export function AppSidebar() {
         {!collapsed && profile && (
           <div className="mb-2 px-2">
             <p className="text-xs font-medium text-sidebar-foreground truncate">{profile.full_name || profile.email}</p>
-            <p className="text-[10px] text-sidebar-foreground/50">{roles.map((r) => ROLE_LABELS[r]).join(", ")}</p>
+            <p className="text-[10px] text-sidebar-foreground/50">{roles.map((r) => t(`role.${r}`)).join(", ")}</p>
           </div>
         )}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={signOut} className="text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent">
               <LogOut className="h-4 w-4" />
-              {!collapsed && <span>Déconnexion</span>}
+              {!collapsed && <span>{t("auth.logout")}</span>}
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
