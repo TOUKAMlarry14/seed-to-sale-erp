@@ -260,11 +260,10 @@ export function GestionComptes() {
 
       <ConfirmDialog
         open={!!delUser}
-        onCancel={() => setDelUser(null)}
+        onOpenChange={(open) => { if (!open) setDelUser(null); }}
         onConfirm={deleteUser}
         title={t("accounts.delete_confirm_title")}
         description={`${t("accounts.delete_confirm_desc")} ${delUser?.email}`}
-        loading={actionLoading?.startsWith("del-")}
       />
     </div>
   );
