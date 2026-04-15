@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, ShoppingCart, Package, Users, FileText, Warehouse,
   Truck, DollarSign, BarChart3, UserCog, CalendarCheck, Receipt,
-  Settings, Building2, Info, ScrollText,
+  Settings, Building2, Info, ScrollText, ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 import type { AppRole } from "@/lib/constants";
@@ -61,6 +61,7 @@ export const navigation: NavSection[] = [
   {
     labelKey: "section.system",
     items: [
+      { titleKey: "nav.accounts", url: "/gestion-comptes", icon: ShieldCheck, roles: ["admin", "techadmin"] },
       { titleKey: "nav.settings", url: "/parametres", icon: Settings, roles: ["admin", "techadmin"] },
       { titleKey: "nav.logs", url: "/logs", icon: ScrollText, roles: ["techadmin"] },
     ],

@@ -22,6 +22,7 @@ import { Parametres } from "@/pages/modules/Parametres";
 import { Information } from "@/pages/modules/Information";
 import { LogsSysteme } from "@/pages/modules/LogsSysteme";
 import { EmployeDetail } from "@/pages/modules/EmployeDetail";
+import { GestionComptes } from "@/pages/modules/GestionComptes";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => {
                     <Route path="/presences" element={<Presences />} />
                     <Route path="/paie" element={<Paie />} />
                     <Route path="/parametres" element={<Parametres />} />
+                    <Route path="/gestion-comptes" element={<GestionComptes />} />
                     <Route path="/information" element={<Information />} />
                     <Route path="/logs" element={<LogsSysteme />} />
                   </Route>
