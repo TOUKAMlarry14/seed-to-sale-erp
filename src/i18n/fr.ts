@@ -551,4 +551,23 @@ export const fr: Record<string, string> = {
   "txn_cat.maintenance": "Maintenance",
   "txn_cat.taxes": "Taxes",
   "txn_cat.autres": "Autres",
+
+  // Accounts RBAC
+  "accounts.title": "Gestion des comptes",
+  "accounts.subtitle": "Gérer les utilisateurs, rôles et permissions",
+  "accounts.total_users": "Total utilisateurs",
+  "accounts.with_roles": "Avec rôle(s)",
+  "accounts.no_roles": "Sans rôle",
+  "accounts.active_7d": "Actifs (7j)",
+  "accounts.user_list": "Liste des utilisateurs",
+  "accounts.search_placeholder": "Rechercher par nom ou email…",
+  "accounts.filter_role": "Filtrer par rôle",
+  "accounts.no_role": "Aucun rôle",
+  "accounts.roles": "Rôles",
+  "accounts.last_login": "Dernière connexion",
+  "accounts.role_added": "Rôle ajouté avec succès",
+  "accounts.role_removed": "Rôle retiré avec succès",
+  "accounts.user_deleted": "Utilisateur supprimé",
+  "accounts.delete_confirm_title": "Supprimer cet utilisateur ?",
+  "accounts.delete_confirm_desc": "Cette action est irréversible. Utilisateur :",
 };
