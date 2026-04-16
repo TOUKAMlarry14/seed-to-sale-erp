@@ -82,6 +82,7 @@ export const fr: Record<string, string> = {
   "common.notes": "Notes",
   "common.no_data": "Aucune donnée",
   "common.results": "résultat(s)",
+  "common.selected": "sélectionné(s)",
   "common.select": "Sélectionner",
   "common.optional": "Optionnel",
   "common.product": "Produit",
