@@ -23,6 +23,8 @@ Deno.serve(async (req) => {
     );
 
     const users: UserToCreate[] = [
+      // Admin
+      { email: "admin@agroconnect.cm", password: "Admin2026!", full_name: "Admin AgroConnect", role: "admin" },
       // Chefs de service
       { email: "chef.commercial@agroconnect.cm", password: "Chef2026!", full_name: "Claudine Ngassa", role: "commercial" },
       { email: "chef.logistique@agroconnect.cm", password: "Chef2026!", full_name: "Paul Atangana", role: "logistique" },

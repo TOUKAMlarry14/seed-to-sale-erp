@@ -6,37 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Leaf, Truck, Users, BarChart3 } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import logoSrc from "@/assets/logo_agroconnect.png";
 
 type Mode = "login" | "signup" | "forgot";
-
-const slides = [
-  {
-    title: "Notre équipe à Douala",
-    desc: "Des professionnels dévoués au siège social, mêlant expertise technique et connaissance du terrain agroalimentaire camerounais.",
-    gradient: "from-emerald-900/80 to-emerald-700/60",
-    icon: Users,
-  },
-  {
-    title: "Excellence logistique",
-    desc: "Notre entrepôt de Bonabéri assure le stockage optimal et le conditionnement de milliers de produits agroalimentaires.",
-    gradient: "from-blue-900/80 to-blue-700/60",
-    icon: BarChart3,
-  },
-  {
-    title: "Livraison de confiance",
-    desc: "Nos livreurs assurent un service rapide et fiable auprès des supermarchés, restaurants et grossistes de Douala.",
-    gradient: "from-amber-900/80 to-amber-700/60",
-    icon: Truck,
-  },
-  {
-    title: "Partenariat agricole",
-    desc: "Nos équipes terrain collaborent directement avec les agriculteurs en zone rurale pour garantir la qualité et la traçabilité.",
-    gradient: "from-green-900/80 to-green-700/60",
-    icon: Leaf,
-  },
-];
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -47,15 +20,9 @@ const Login = () => {
   const [mode, setMode] = useState<Mode>("login");
   const [showPw, setShowPw] = useState(false);
   const [showConfirmPw, setShowConfirmPw] = useState(false);
-  const [slideIndex, setSlideIndex] = useState(0);
   const { signIn, signUp, resetPassword } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  useEffect(() => {
-    const timer = setInterval(() => setSlideIndex(i => (i + 1) % slides.length), 5000);
-    return () => clearInterval(timer);
-  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,100 +71,116 @@ const Login = () => {
   };
 
   const titles: Record<Mode, { title: string; description: string }> = {
-    login: { title: "Connexion", description: "Connectez-vous à votre espace AgroConnect" },
+    login: { title: "Bon retour", description: "Connectez-vous à votre espace AgroConnect" },
     signup: { title: "Créer un compte", description: "Inscrivez-vous pour accéder à AgroConnect ERP" },
     forgot: { title: "Mot de passe oublié", description: "Entrez votre email pour recevoir un lien" },
   };
 
   const handleSubmit = mode === "login" ? handleLogin : mode === "signup" ? handleSignUp : handleForgotPassword;
-  const slide = slides[slideIndex];
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left - Form */}
       <div className="flex items-center justify-center p-6 lg:p-12 bg-background">
-        <div className="w-full max-w-md space-y-8">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center overflow-hidden">
-              <img src={logoSrc} alt="AgroConnect" className="h-12 w-12 object-contain" />
+        <div className="w-full max-w-[400px] space-y-8 animate-fade-in">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center overflow-hidden">
+              <img src={logoSrc} alt="AgroConnect" className="h-10 w-10 object-contain" />
             </div>
-            <p className="text-muted-foreground text-sm text-center">Solution ERP pour la distribution agroalimentaire</p>
+            <p className="text-muted-foreground text-xs tracking-wide uppercase font-medium">ERP Agroalimentaire</p>
           </div>
 
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="font-heading text-xl">{titles[mode].title}</CardTitle>
-              <CardDescription>{titles[mode].description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {mode === "signup" && (
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Nom complet</Label>
-                    <Input id="fullName" type="text" placeholder="Jean Dupont" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="email">Adresse email</Label>
-                  <Input id="email" type="email" placeholder="nom@agroconnect.cm" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-                {mode !== "forgot" && (
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Mot de passe</Label>
-                    <div className="relative">
-                      <Input id="password" type={showPw ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="pr-10" />
-                      <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                        {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {mode === "signup" && (
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                    <div className="relative">
-                      <Input id="confirmPassword" type={showConfirmPw ? "text" : "password"} placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="pr-10" />
-                      <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                        {showConfirmPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </div>
-                )}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Chargement..." : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}
-                </Button>
-                {mode === "login" && (
-                  <>
-                    <Button type="button" variant="outline" className="w-full" onClick={() => setMode("signup")}>Créer un compte</Button>
-                    <button type="button" onClick={() => setMode("forgot")} className="w-full text-sm text-primary hover:underline">Mot de passe oublié ?</button>
-                  </>
-                )}
-                {mode !== "login" && (
-                  <button type="button" onClick={() => setMode("login")} className="w-full text-sm text-primary hover:underline">Retour à la connexion</button>
-                )}
-              </form>
-            </CardContent>
-          </Card>
+          <div className="space-y-1.5 text-center">
+            <h1 className="font-heading text-2xl font-bold tracking-tight">{titles[mode].title}</h1>
+            <p className="text-sm text-muted-foreground">{titles[mode].description}</p>
+          </div>
 
-          <p className="text-center text-xs text-muted-foreground">© 2026 AgroConnect SARL — Douala, Cameroun</p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === "signup" && (
+              <div className="space-y-1.5">
+                <Label htmlFor="fullName" className="text-xs font-medium">Nom complet</Label>
+                <Input id="fullName" type="text" placeholder="Jean Dupont" value={fullName} onChange={(e) => setFullName(e.target.value)} required className="h-10" />
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs font-medium">Adresse email</Label>
+              <Input id="email" type="email" placeholder="nom@agroconnect.cm" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-10" />
+            </div>
+            {mode !== "forgot" && (
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-xs font-medium">Mot de passe</Label>
+                <div className="relative">
+                  <Input id="password" type={showPw ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="pr-10 h-10" />
+                  <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                    {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+            {mode === "signup" && (
+              <div className="space-y-1.5">
+                <Label htmlFor="confirmPassword" className="text-xs font-medium">Confirmer le mot de passe</Label>
+                <div className="relative">
+                  <Input id="confirmPassword" type={showConfirmPw ? "text" : "password"} placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="pr-10 h-10" />
+                  <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                    {showConfirmPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+            <Button type="submit" className="w-full h-10 btn-press font-medium" disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
+                <>
+                  {mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </>
+              )}
+            </Button>
+            {mode === "login" && (
+              <div className="space-y-2">
+                <Button type="button" variant="outline" className="w-full h-10" onClick={() => setMode("signup")}>Créer un compte</Button>
+                <button type="button" onClick={() => setMode("forgot")} className="w-full text-xs text-muted-foreground hover:text-primary transition-colors">
+                  Mot de passe oublié ?
+                </button>
+              </div>
+            )}
+            {mode !== "login" && (
+              <button type="button" onClick={() => setMode("login")} className="w-full text-xs text-muted-foreground hover:text-primary transition-colors">
+                Retour à la connexion
+              </button>
+            )}
+          </form>
+
+          <p className="text-center text-[10px] text-muted-foreground/60">© 2026 AgroConnect SARL — Douala, Cameroun</p>
         </div>
       </div>
 
-      {/* Right - Slideshow */}
-      <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-success/90 to-success/60">
-        <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradient} transition-all duration-700`} />
-        <div className="relative z-10 flex flex-col items-center justify-center p-12 text-white text-center">
-          <slide.icon className="h-16 w-16 mb-6 opacity-80" />
-          <h2 className="text-3xl font-heading font-bold mb-4">{slide.title}</h2>
-          <p className="text-sm opacity-90 leading-relaxed max-w-md mb-8">{slide.desc}</p>
-          <div className="flex gap-2">
-            {slides.map((_, i) => (
-              <button key={i} onClick={() => setSlideIndex(i)} className={`w-2 h-2 rounded-full transition-all ${i === slideIndex ? "bg-white w-6" : "bg-white/40"}`} />
+      {/* Right - Visual */}
+      <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-primary/90 via-primary to-primary/80">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
+        </div>
+        <div className="relative z-10 flex flex-col items-center justify-center p-16 text-white text-center">
+          <div className="w-20 h-20 rounded-3xl bg-white/10 backdrop-blur flex items-center justify-center mb-8">
+            <img src={logoSrc} alt="" className="h-14 w-14 object-contain brightness-0 invert" />
+          </div>
+          <h2 className="text-4xl font-heading font-bold mb-4 tracking-tight">AgroConnect ERP</h2>
+          <p className="text-base opacity-80 leading-relaxed max-w-sm">
+            Solution complète de gestion pour la distribution agroalimentaire au Cameroun.
+          </p>
+          <div className="mt-12 grid grid-cols-3 gap-8 text-center">
+            {[
+              { value: "500+", label: "Clients" },
+              { value: "10K+", label: "Commandes" },
+              { value: "99.9%", label: "Uptime" },
+            ].map((s) => (
+              <div key={s.label}>
+                <p className="text-2xl font-heading font-bold">{s.value}</p>
+                <p className="text-xs opacity-60 mt-1">{s.label}</p>
+              </div>
             ))}
           </div>
-        </div>
-        <div className="absolute bottom-8 left-0 right-0 text-center">
-          <p className="text-white/70 text-xs">AgroConnect SARL — Connecter les producteurs aux marchés</p>
         </div>
       </div>
     </div>
