@@ -6,95 +6,98 @@
 
 @layer base {
   :root {
+    /* AgroConnect brand palette — Vert primaire #1B5E20, Marron #5D4037, Jaune #FBC02D, Rouge #C62828 */
     --background: 0 0% 99%;
-    --foreground: 220 14% 10%;
+    --foreground: 16 30% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 14% 10%;
+    --card-foreground: 16 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 14% 10%;
+    --popover-foreground: 16 30% 12%;
 
-    --primary: 220 72% 50%;
+    --primary: 124 56% 24%;            /* #1B5E20 vert primaire */
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 124 50% 38%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 14% 10%;
+    --secondary: 16 21% 30%;           /* #5D4037 marron profond */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 0 0% 96%;                 /* #F5F5F5 gris neutre */
+    --muted-foreground: 16 10% 38%;
 
-    --accent: 220 14% 94%;
-    --accent-foreground: 220 14% 10%;
+    --accent: 124 30% 92%;             /* vert très clair */
+    --accent-foreground: 124 56% 18%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 65% 47%;          /* #C62828 rouge erreur */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 60% 36%;
+    --success: 124 56% 32%;            /* vert succès */
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 45 96% 56%;             /* #FBC02D jaune profond */
+    --warning-foreground: 16 30% 12%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 220 72% 50%;
+    --border: 16 10% 88%;
+    --input: 16 10% 88%;
+    --ring: 124 56% 24%;
 
     --radius: 0.625rem;
 
-    --sidebar-background: 220 20% 14%;
-    --sidebar-foreground: 220 14% 92%;
+    --sidebar-background: 124 40% 10%;       /* vert profond */
+    --sidebar-foreground: 124 15% 88%;
     --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 220 20% 14%;
-    --sidebar-accent: 220 16% 22%;
+    --sidebar-primary-foreground: 124 40% 10%;
+    --sidebar-accent: 124 30% 18%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 16% 20%;
-    --sidebar-ring: 220 72% 50%;
+    --sidebar-border: 124 30% 16%;
+    --sidebar-ring: 124 56% 38%;
   }
 
   .dark {
-    --background: 220 20% 7%;
-    --foreground: 220 14% 92%;
+    --background: 124 25% 6%;
+    --foreground: 124 15% 90%;
 
-    --card: 220 20% 10%;
-    --card-foreground: 220 14% 92%;
+    --card: 124 25% 9%;
+    --card-foreground: 124 15% 90%;
 
-    --popover: 220 20% 10%;
-    --popover-foreground: 220 14% 92%;
+    --popover: 124 25% 9%;
+    --popover-foreground: 124 15% 90%;
 
-    --primary: 220 72% 56%;
+    --primary: 124 50% 42%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 124 56% 56%;
 
-    --secondary: 220 16% 16%;
-    --secondary-foreground: 220 14% 92%;
+    --secondary: 16 21% 28%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 16% 16%;
-    --muted-foreground: 220 9% 56%;
+    --muted: 124 15% 14%;
+    --muted-foreground: 124 8% 60%;
 
-    --accent: 220 16% 18%;
-    --accent-foreground: 220 14% 92%;
+    --accent: 124 25% 18%;
+    --accent-foreground: 124 15% 92%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 65% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 60% 40%;
+    --success: 124 50% 42%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 45 96% 56%;
+    --warning-foreground: 16 30% 12%;
 
-    --border: 220 16% 18%;
-    --input: 220 16% 18%;
-    --ring: 220 72% 56%;
+    --border: 124 20% 18%;
+    --input: 124 20% 18%;
+    --ring: 124 50% 50%;
 
-    --sidebar-background: 220 25% 6%;
-    --sidebar-foreground: 220 14% 85%;
-    --sidebar-primary: 220 72% 56%;
+    --sidebar-background: 124 40% 5%;
+    --sidebar-foreground: 124 15% 85%;
+    --sidebar-primary: 124 50% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 16% 14%;
-    --sidebar-accent-foreground: 220 14% 85%;
-    --sidebar-border: 220 16% 12%;
-    --sidebar-ring: 220 72% 56%;
+    --sidebar-accent: 124 25% 12%;
+    --sidebar-accent-foreground: 124 15% 90%;
+    --sidebar-border: 124 25% 10%;
+    --sidebar-ring: 124 50% 50%;
   }
 }
 
