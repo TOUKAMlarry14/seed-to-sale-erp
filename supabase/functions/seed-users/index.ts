@@ -54,6 +54,12 @@ Deno.serve(async (req) => {
       const { data: existing } = await supabaseAdmin.auth.admin.listUsers();
       const found = existing?.users?.find((eu: any) => eu.email === u.email);
       if (found) {
+        // Force-reset password + confirm email so seed credentials always work
+        await supabaseAdmin.auth.admin.updateUserById(found.id, {
+          password: u.password,
+          email_confirm: true,
+          user_metadata: { full_name: u.full_name },
+        });
         // Ensure role exists
         const { data: roleCheck } = await supabaseAdmin
           .from("user_roles")
@@ -64,7 +70,7 @@ Deno.serve(async (req) => {
         if (!roleCheck) {
           await supabaseAdmin.from("user_roles").insert({ user_id: found.id, role: u.role });
         }
-        results.push({ email: u.email, status: "exists", id: found.id });
+        results.push({ email: u.email, status: "reset", id: found.id });
         continue;
       }
 
