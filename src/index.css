@@ -156,6 +156,13 @@
     backdrop-filter: blur(12px) saturate(180%);
     background: hsl(var(--card) / 0.8);
   }
+
+  /* Safe text wrapping for emails, URLs, long strings */
+  .text-safe {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
 }
 
 @keyframes fadeSlideIn {

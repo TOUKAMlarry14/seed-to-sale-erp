@@ -68,38 +68,38 @@ export function EmployeDetail() {
       {/* Info Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <Phone className="h-4 w-4 text-muted-foreground" />
-            <div>
+          <CardContent className="p-4 flex items-center gap-3 min-w-0">
+            <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-muted-foreground">Téléphone</p>
-              <p className="text-sm font-medium">{employee.phone || "—"}</p>
+              <p className="text-sm font-medium break-all">{employee.phone || "—"}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <Mail className="h-4 w-4 text-muted-foreground" />
-            <div>
+          <CardContent className="p-4 flex items-center gap-3 min-w-0">
+            <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-muted-foreground">Email</p>
-              <p className="text-sm font-medium">{(employee as any).email || "—"}</p>
+              <p className="text-sm font-medium break-all [overflow-wrap:anywhere]" title={(employee as any).email || ""}>{(employee as any).email || "—"}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <div>
+          <CardContent className="p-4 flex items-center gap-3 min-w-0">
+            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-muted-foreground">Date d'embauche</p>
               <p className="text-sm font-medium">{new Date(employee.hire_date).toLocaleDateString("fr-FR")}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-            <div>
+          <CardContent className="p-4 flex items-center gap-3 min-w-0">
+            <Wallet className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-muted-foreground">Salaire brut</p>
-              <p className="text-sm font-medium">{Number(employee.salary).toLocaleString()} {CURRENCY}</p>
+              <p className="text-sm font-medium break-all">{Number(employee.salary).toLocaleString()} {CURRENCY}</p>
               {(employee as any).bonus_amount > 0 && (
                 <p className="text-[10px] text-warning">+ {Number((employee as any).bonus_amount).toLocaleString()} bonus</p>
               )}
