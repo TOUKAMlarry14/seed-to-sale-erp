@@ -113,6 +113,7 @@ export function Commandes() {
         columns={[
           { key: "created_at", label: t("common.date"), render: (r) => formatDate(r.created_at) },
           { key: "client", label: t("orders.client"), render: (r) => (r as any).clients?.name || "—" },
+          { key: "delivery_address", label: t("orders.delivery_address"), render: (r) => <span className="text-safe block max-w-[200px]" title={r.delivery_address || ""}>{r.delivery_address || "—"}</span> },
           { key: "total", label: `${t("common.total")} (${CURRENCY})`, render: (r) => r.total?.toLocaleString() },
           { key: "status", label: t("common.status"), render: (r) => <StatusBadge status={r.status} /> },
           { key: "actions", label: "", render: (r) => (
