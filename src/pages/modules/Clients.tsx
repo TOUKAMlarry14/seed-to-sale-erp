@@ -97,7 +97,7 @@ export function Clients() {
           { key: "name", label: "Nom" },
           { key: "type", label: "Type", render: (r) => <Badge variant="outline" className="text-[10px]">{CLIENT_TYPES.find(t => t.value === r.type)?.label || r.type}</Badge> },
           { key: "phone", label: "Téléphone" },
-          { key: "email", label: "Email" },
+          { key: "email", label: "Email", render: (r) => <span className="text-safe block max-w-[200px]">{r.email || "—"}</span> },
           { key: "balance", label: `Solde (${CURRENCY})`, render: (r) => <span className={r.balance < 0 ? "text-destructive" : ""}>{r.balance?.toLocaleString()}</span> },
           { key: "actions", label: "", render: (r) => <Button variant="ghost" size="icon" onClick={() => openEdit(r)}><Pencil className="h-3.5 w-3.5" /></Button> },
         ]}
