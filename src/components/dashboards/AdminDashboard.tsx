@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CURRENCY } from "@/lib/constants";
 import { TodoWidget } from "@/components/TodoWidget";
 import { useTranslation } from "@/contexts/I18nContext";
-import { TrendingUp, ShoppingCart, Wallet, AlertTriangle, Truck, Users } from "lucide-react";
+import { TrendingUp, ShoppingCart, Wallet, AlertTriangle, Truck, Users, CalendarRange } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const COLORS = ["hsl(214, 89%, 34%)", "hsl(148, 58%, 26%)", "hsl(38, 92%, 50%)", "hsl(4, 84%, 47%)", "hsl(215, 16%, 47%)"];
@@ -10,13 +12,16 @@ const formatCFA = (v: number) => `${(v / 1000000).toFixed(1)}M`;
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
+  const [period, setPeriod] = useState<"day" | "month" | "year">("month");
+  const factor = period === "day" ? 0.04 : period === "year" ? 12 : 1;
+  const fmt = (n: number) => Math.round(n * factor).toLocaleString();
 
   const kpis = [
-    { label: t("dashboard.monthly_revenue"), value: "12 450 000", suffix: CURRENCY, icon: TrendingUp, trend: "+8.2%", color: "text-primary" },
-    { label: t("dashboard.daily_orders"), value: "23", suffix: "", icon: ShoppingCart, trend: "+3", color: "text-primary" },
-    { label: t("dashboard.cash_balance"), value: "8 320 000", suffix: CURRENCY, icon: Wallet, trend: "+2.1%", color: "text-success" },
+    { label: t("dashboard.monthly_revenue"), value: fmt(12450000), suffix: CURRENCY, icon: TrendingUp, trend: "+8.2%", color: "text-primary" },
+    { label: t("dashboard.daily_orders"), value: fmt(23), suffix: "", icon: ShoppingCart, trend: "+3", color: "text-primary" },
+    { label: t("dashboard.cash_balance"), value: fmt(8320000), suffix: CURRENCY, icon: Wallet, trend: "+2.1%", color: "text-success" },
     { label: t("dashboard.stock_alerts"), value: "4", suffix: t("dashboard.products"), icon: AlertTriangle, trend: "", color: "text-destructive" },
-    { label: t("dashboard.daily_deliveries"), value: "7", suffix: "", icon: Truck, trend: `2 ${t("dashboard.late")}`, color: "text-warning" },
+    { label: t("dashboard.daily_deliveries"), value: fmt(7), suffix: "", icon: Truck, trend: `2 ${t("dashboard.late")}`, color: "text-warning" },
     { label: t("dashboard.employees_present"), value: "18/22", suffix: "", icon: Users, trend: "82%", color: "text-primary" },
   ];
 
@@ -34,9 +39,22 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-heading font-bold">{t("dashboard.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-heading font-bold">{t("dashboard.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <CalendarRange className="h-4 w-4 text-muted-foreground" />
+          <Select value={period} onValueChange={(v: any) => setPeriod(v)}>
+            <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="day">Jour</SelectItem>
+              <SelectItem value="month">Mois</SelectItem>
+              <SelectItem value="year">Année</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {kpis.map((kpi) => (
