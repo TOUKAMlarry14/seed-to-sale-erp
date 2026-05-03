@@ -126,7 +126,7 @@ export function Livraisons() {
       <DataTable data={filtered} searchKey="destination" columns={[
         { key: "scheduled_date", label: t("deliveries.scheduled_date"), render: (r) => formatDate(r.scheduled_date) },
         { key: "client", label: t("orders.client"), render: (r) => (r as any).orders?.clients?.name || "—" },
-        { key: "destination", label: t("deliveries.destination"), render: (r) => r.destination || "—" },
+        { key: "destination", label: t("deliveries.destination"), render: (r) => <span className="text-safe block max-w-[200px]" title={r.destination || ""}>{r.destination || "—"}</span> },
         { key: "driver", label: t("deliveries.driver"), render: (r) => (r as any).employees?.name || "Non assigné" },
         { key: "status", label: t("common.status"), render: (r) => <StatusBadge status={r.status} /> },
         { key: "actions", label: "", render: (r) => (
