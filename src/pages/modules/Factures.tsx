@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CURRENCY, INVOICE_STATUS_LABELS } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
-import { Loader2, CreditCard } from "lucide-react";
+import { Loader2, CreditCard, FileDown } from "lucide-react";
+import { exportToPDF } from "@/lib/exportUtils";
 
 const PAYMENT_MODES = [
   { value: "cash", label: "Cash" },
@@ -79,10 +80,22 @@ export function Factures() {
           { key: "amount_paid", label: `Payé (${CURRENCY})`, render: (r) => (r.amount_paid || 0).toLocaleString() },
           { key: "due_date", label: "Échéance", render: (r) => r.due_date ? formatDate(r.due_date) : "—" },
           { key: "status", label: "Statut", render: (r) => <StatusBadge status={r.status} /> },
-          { key: "actions", label: "", render: (r) => r.status !== "paye" && (
-            <Button variant="outline" size="sm" className="text-xs" onClick={() => { setPaymentDialog(r); setPayForm({ amount: r.amount - (r.amount_paid || 0), mode: "cash" }); }}>
-              <CreditCard className="h-3 w-3 mr-1" />Paiement
-            </Button>
+          { key: "actions", label: "", render: (r) => (
+            <div className="flex gap-1 justify-end">
+              <Button variant="ghost" size="icon" className="h-7 w-7" title="Exporter PDF" onClick={() => exportToPDF(
+                [{ invoice_number: r.invoice_number, client: (r as any).clients?.name || "—", amount: `${Number(r.amount).toLocaleString()} ${CURRENCY}`, amount_paid: `${Number(r.amount_paid || 0).toLocaleString()} ${CURRENCY}`, due_date: r.due_date ? formatDate(r.due_date) : "—", status: INVOICE_STATUS_LABELS[r.status as keyof typeof INVOICE_STATUS_LABELS] || r.status }],
+                [{ key: "invoice_number", label: "N° Facture" }, { key: "client", label: "Client" }, { key: "amount", label: "Montant" }, { key: "amount_paid", label: "Payé" }, { key: "due_date", label: "Échéance" }, { key: "status", label: "Statut" }],
+                `Facture ${r.invoice_number}`,
+                `facture-${r.invoice_number}`
+              )}>
+                <FileDown className="h-3.5 w-3.5" />
+              </Button>
+              {r.status !== "paye" && (
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => { setPaymentDialog(r); setPayForm({ amount: r.amount - (r.amount_paid || 0), mode: "cash" }); }}>
+                  <CreditCard className="h-3 w-3 mr-1" />Paiement
+                </Button>
+              )}
+            </div>
           )},
         ]}
       />
