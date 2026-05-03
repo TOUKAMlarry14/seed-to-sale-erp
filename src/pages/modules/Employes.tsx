@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { CURRENCY } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Loader2, Trash2, Eye, PlusCircle } from "lucide-react";
+import { Plus, Pencil, Loader2, Trash2, Eye, PlusCircle, Power } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
@@ -167,6 +167,9 @@ export function Employes() {
           <div className="flex gap-1">
             <Button variant="ghost" size="icon" onClick={() => navigate(`/employes/${r.id}`)}><Eye className="h-3.5 w-3.5" /></Button>
             <Button variant="ghost" size="icon" onClick={() => openEdit(r)}><Pencil className="h-3.5 w-3.5" /></Button>
+            <Button variant="ghost" size="icon" title={r.is_active ? t("employees.status_active") : t("employees.status_suspended")} onClick={() => updateEmployee.mutate({ id: r.id, is_active: !r.is_active } as any)}>
+              <Power className={`h-3.5 w-3.5 ${r.is_active ? "text-success" : "text-muted-foreground"}`} />
+            </Button>
             <Button variant="ghost" size="icon" className="text-destructive" onClick={() => setDeleteTarget(r)}><Trash2 className="h-3.5 w-3.5" /></Button>
           </div>
         )},
