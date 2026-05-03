@@ -94,8 +94,8 @@ export function Fournisseurs() {
       <DataTable data={filtered} searchKey="name" columns={[
         { key: "name", label: "Nom" },
         { key: "phone", label: "Téléphone" },
-        { key: "email", label: "Email" },
-        { key: "address", label: "Adresse / Zone" },
+        { key: "email", label: "Email", render: (r) => <span className="text-safe block max-w-[200px]">{r.email || "—"}</span> },
+        { key: "address", label: "Adresse / Zone", render: (r) => <span className="text-safe block max-w-[220px]">{r.address || "—"}</span> },
         { key: "actions", label: "", render: (r) => (
           <div className="flex gap-1">
             <Button variant="ghost" size="icon" onClick={() => openEdit(r)}><Pencil className="h-3.5 w-3.5" /></Button>
