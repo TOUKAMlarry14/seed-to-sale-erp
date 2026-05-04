@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CURRENCY } from "@/lib/constants";
@@ -6,6 +6,13 @@ import { TodoWidget } from "@/components/TodoWidget";
 import { useTranslation } from "@/contexts/I18nContext";
 import { TrendingUp, ShoppingCart, Wallet, AlertTriangle, Truck, Users, CalendarRange } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useInvoices } from "@/hooks/useInvoices";
+import { useOrders } from "@/hooks/useOrders";
+import { useTransactions } from "@/hooks/useTransactions";
+import { useDeliveries } from "@/hooks/useDeliveries";
+import { useProducts } from "@/hooks/useProducts";
+import { useEmployees } from "@/hooks/useEmployees";
+import { useAttendances } from "@/hooks/useAttendances";
 
 const COLORS = ["hsl(214, 89%, 34%)", "hsl(148, 58%, 26%)", "hsl(38, 92%, 50%)", "hsl(4, 84%, 47%)", "hsl(215, 16%, 47%)"];
 const formatCFA = (v: number) => `${(v / 1000000).toFixed(1)}M`;
@@ -13,29 +20,75 @@ const formatCFA = (v: number) => `${(v / 1000000).toFixed(1)}M`;
 export default function AdminDashboard() {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<"day" | "month" | "year">("month");
-  const factor = period === "day" ? 0.04 : period === "year" ? 12 : 1;
-  const fmt = (n: number) => Math.round(n * factor).toLocaleString();
+  const today = new Date().toISOString().split("T")[0];
+  const { data: invoices = [] } = useInvoices();
+  const { data: orders = [] } = useOrders();
+  const { data: transactions = [] } = useTransactions();
+  const { data: deliveries = [] } = useDeliveries();
+  const { data: products = [] } = useProducts();
+  const { data: employees = [] } = useEmployees();
+  const { data: attendances = [] } = useAttendances(today);
 
-  const kpis = [
-    { label: t("dashboard.monthly_revenue"), value: fmt(12450000), suffix: CURRENCY, icon: TrendingUp, trend: "+8.2%", color: "text-primary" },
-    { label: t("dashboard.daily_orders"), value: fmt(23), suffix: "", icon: ShoppingCart, trend: "+3", color: "text-primary" },
-    { label: t("dashboard.cash_balance"), value: fmt(8320000), suffix: CURRENCY, icon: Wallet, trend: "+2.1%", color: "text-success" },
-    { label: t("dashboard.stock_alerts"), value: "4", suffix: t("dashboard.products"), icon: AlertTriangle, trend: "", color: "text-destructive" },
-    { label: t("dashboard.daily_deliveries"), value: fmt(7), suffix: "", icon: Truck, trend: `2 ${t("dashboard.late")}`, color: "text-warning" },
-    { label: t("dashboard.employees_present"), value: "18/22", suffix: "", icon: Users, trend: "82%", color: "text-primary" },
-  ];
+  const { kpis, caData, commandesData, depensesData } = useMemo(() => {
+    const now = new Date();
+    const start = new Date(now);
+    if (period === "day") start.setHours(0, 0, 0, 0);
+    else if (period === "month") start.setDate(1);
+    else start.setMonth(0, 1);
+    const startMs = start.getTime();
 
-  const caData = [
-    { mois: t("chart.month.oct"), ca: 9200000 }, { mois: t("chart.month.nov"), ca: 10500000 }, { mois: t("chart.month.dec"), ca: 11800000 },
-    { mois: t("chart.month.jan"), ca: 10200000 }, { mois: t("chart.month.feb"), ca: 11400000 }, { mois: t("chart.month.mar"), ca: 12450000 },
-  ];
-  const commandesData = [
-    { semaine: "S1", commandes: 45 }, { semaine: "S2", commandes: 52 }, { semaine: "S3", commandes: 48 }, { semaine: "S4", commandes: 61 },
-  ];
-  const depensesData = [
-    { name: t("chart.purchases"), value: 5200000 }, { name: t("chart.salaries"), value: 3100000 }, { name: t("chart.transport"), value: 1400000 },
-    { name: t("chart.rent"), value: 800000 }, { name: t("chart.other"), value: 600000 },
-  ];
+    const inRange = (d?: string | null) => d ? new Date(d).getTime() >= startMs : false;
+
+    const revenue = (invoices as any[])
+      .filter(i => i.status === "payee" && inRange(i.created_at))
+      .reduce((s, i) => s + Number(i.amount || 0), 0);
+    const ordersCount = (orders as any[]).filter(o => inRange(o.created_at)).length;
+    const cash = (transactions as any[]).reduce((s, t) =>
+      s + (t.type === "revenu" ? Number(t.amount) : -Number(t.amount)), 0);
+    const lowStock = (products as any[]).filter(p => (p.stock_qty ?? 0) <= (p.stock_alert_threshold ?? 0)).length;
+    const delivCount = (deliveries as any[]).filter(d => inRange(d.created_at)).length;
+    const lateDeliv = (deliveries as any[]).filter(d => d.status === "retard").length;
+    const present = (attendances as any[]).filter(a => a.status === "present").length;
+    const totalEmp = (employees as any[]).filter(e => e.status === "actif").length;
+
+    const kpis = [
+      { label: t("dashboard.monthly_revenue"), value: revenue.toLocaleString(), suffix: CURRENCY, icon: TrendingUp, trend: "", color: "text-primary" },
+      { label: t("dashboard.daily_orders"), value: String(ordersCount), suffix: "", icon: ShoppingCart, trend: "", color: "text-primary" },
+      { label: t("dashboard.cash_balance"), value: cash.toLocaleString(), suffix: CURRENCY, icon: Wallet, trend: "", color: cash >= 0 ? "text-success" : "text-destructive" },
+      { label: t("dashboard.stock_alerts"), value: String(lowStock), suffix: t("dashboard.products"), icon: AlertTriangle, trend: "", color: "text-destructive" },
+      { label: t("dashboard.daily_deliveries"), value: String(delivCount), suffix: "", icon: Truck, trend: lateDeliv ? `${lateDeliv} ${t("dashboard.late")}` : "", color: "text-warning" },
+      { label: t("dashboard.employees_present"), value: `${present}/${totalEmp}`, suffix: "", icon: Users, trend: totalEmp ? `${Math.round((present / totalEmp) * 100)}%` : "—", color: "text-primary" },
+    ];
+
+    // CA — last 6 months
+    const months = [t("chart.month.oct"), t("chart.month.nov"), t("chart.month.dec"), t("chart.month.jan"), t("chart.month.feb"), t("chart.month.mar")];
+    const caData = Array.from({ length: 6 }).map((_, idx) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1);
+      const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+      const sum = (invoices as any[])
+        .filter(i => i.status === "payee" && i.created_at && new Date(i.created_at) >= d && new Date(i.created_at) < next)
+        .reduce((s, i) => s + Number(i.amount || 0), 0);
+      return { mois: months[idx] || d.toLocaleString("fr", { month: "short" }), ca: sum };
+    });
+
+    // Commandes — last 4 weeks
+    const commandesData = Array.from({ length: 4 }).map((_, idx) => {
+      const end = new Date(now); end.setDate(now.getDate() - (3 - idx) * 7);
+      const wStart = new Date(end); wStart.setDate(end.getDate() - 7);
+      const count = (orders as any[]).filter(o => o.created_at && new Date(o.created_at) >= wStart && new Date(o.created_at) < end).length;
+      return { semaine: `S${idx + 1}`, commandes: count };
+    });
+
+    // Dépenses par catégorie (sur la période)
+    const expenseMap = new Map<string, number>();
+    (transactions as any[])
+      .filter(t => t.type === "depense" && inRange(t.date))
+      .forEach(t => expenseMap.set(t.category || "autre", (expenseMap.get(t.category || "autre") || 0) + Number(t.amount || 0)));
+    const depensesData = Array.from(expenseMap.entries()).map(([name, value]) => ({ name, value }));
+    if (depensesData.length === 0) depensesData.push({ name: t("chart.other"), value: 0 });
+
+    return { kpis, caData, commandesData, depensesData };
+  }, [period, invoices, orders, transactions, deliveries, products, employees, attendances, t]);
 
   return (
     <div className="space-y-6">
