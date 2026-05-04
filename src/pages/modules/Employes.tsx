@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { CURRENCY } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, Pencil, Loader2, Trash2, Eye, PlusCircle, Power } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -35,13 +36,13 @@ export function Employes() {
   const [form, setForm] = useState({
     name: "", role: "commercial", phone: "", email: "", salary: 0,
     hire_date: new Date().toISOString().split("T")[0], department: "Commercial",
-    bonus_amount: 0, bonus_reason: "",
+    bonus_amount: 0, bonus_reason: "", bonus_expiry: "", avatar_url: "",
   });
 
   const resetForm = () => setForm({
     name: "", role: "commercial", phone: "", email: "", salary: 0,
     hire_date: new Date().toISOString().split("T")[0], department: "Commercial",
-    bonus_amount: 0, bonus_reason: "",
+    bonus_amount: 0, bonus_reason: "", bonus_expiry: "", avatar_url: "",
   });
 
   const deleteEmployee = useMutation({
@@ -54,7 +55,7 @@ export function Employes() {
   });
 
   const handleSubmit = () => {
-    const payload = { name: form.name, role: form.role, phone: form.phone, email: form.email, salary: form.salary, hire_date: form.hire_date, department: form.department, bonus_amount: form.bonus_amount, bonus_reason: form.bonus_reason };
+    const payload = { name: form.name, role: form.role, phone: form.phone, email: form.email, salary: form.salary, hire_date: form.hire_date, department: form.department, bonus_amount: form.bonus_amount, bonus_reason: form.bonus_reason, bonus_expiry: form.bonus_expiry || null, avatar_url: form.avatar_url };
     if (editItem) {
       updateEmployee.mutate({ id: editItem.id, ...payload } as any, { onSuccess: () => { setOpen(false); setEditItem(null); resetForm(); } });
     } else {
@@ -64,7 +65,7 @@ export function Employes() {
 
   const openEdit = (e: any) => {
     setEditItem(e);
-    setForm({ name: e.name, role: e.role, phone: e.phone || "", email: e.email || "", salary: e.salary, hire_date: e.hire_date, department: e.department || "Général", bonus_amount: e.bonus_amount || 0, bonus_reason: e.bonus_reason || "" });
+    setForm({ name: e.name, role: e.role, phone: e.phone || "", email: e.email || "", salary: e.salary, hire_date: e.hire_date, department: e.department || "Général", bonus_amount: e.bonus_amount || 0, bonus_reason: e.bonus_reason || "", bonus_expiry: e.bonus_expiry || "", avatar_url: e.avatar_url || "" });
     setOpen(true);
   };
 
@@ -121,6 +122,10 @@ export function Employes() {
                   <div><Label>{t("employees.bonus")} ({CURRENCY})</Label><Input type="number" value={form.bonus_amount || ""} onFocus={e => { if (form.bonus_amount === 0) e.target.select(); }} onChange={e => setForm({ ...form, bonus_amount: +e.target.value })} /></div>
                   <div><Label>{t("employees.bonus_reason")}</Label><Input value={form.bonus_reason} onChange={e => setForm({ ...form, bonus_reason: e.target.value })} placeholder={t("employees.performance")} /></div>
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Validité bonus (jusqu'au)</Label><Input type="date" value={form.bonus_expiry} onChange={e => setForm({ ...form, bonus_expiry: e.target.value })} /></div>
+                  <div><Label>URL Avatar</Label><Input value={form.avatar_url} onChange={e => setForm({ ...form, avatar_url: e.target.value })} placeholder="https://..." /></div>
+                </div>
                 <Button onClick={handleSubmit} disabled={!form.name || createEmployee.isPending || updateEmployee.isPending}>
                   {(createEmployee.isPending || updateEmployee.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                   {editItem ? t("common.edit") : t("common.create")}
@@ -139,7 +144,12 @@ export function Employes() {
       </div>
 
       <DataTable data={filtered} searchKey="name" columns={[
-        { key: "name", label: t("common.name") },
+        { key: "name", label: t("common.name"), render: (r) => (
+          <div className="flex items-center gap-2">
+            <Avatar className="h-7 w-7"><AvatarImage src={(r as any).avatar_url || undefined} /><AvatarFallback className="text-[10px]">{r.name.split(" ").map((n: string) => n[0]).join("").slice(0,2).toUpperCase()}</AvatarFallback></Avatar>
+            <span className="text-safe">{r.name}</span>
+          </div>
+        ) },
         { key: "email", label: t("common.email"), render: (r) => (r as any).email || "—" },
         { key: "role", label: t("employees.role"), render: (r) => <Badge variant="outline" className="text-[10px]">{t(`role.${r.role}`)}</Badge> },
         { key: "department", label: t("employees.department") },
