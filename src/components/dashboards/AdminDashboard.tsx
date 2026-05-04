@@ -60,24 +60,32 @@ export default function AdminDashboard() {
       { label: t("dashboard.employees_present"), value: `${present}/${totalEmp}`, suffix: "", icon: Users, trend: totalEmp ? `${Math.round((present / totalEmp) * 100)}%` : "—", color: "text-primary" },
     ];
 
-    // CA — last 6 months
-    const months = [t("chart.month.oct"), t("chart.month.nov"), t("chart.month.dec"), t("chart.month.jan"), t("chart.month.feb"), t("chart.month.mar")];
-    const caData = Array.from({ length: 6 }).map((_, idx) => {
-      const d = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1);
-      const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-      const sum = (invoices as any[])
-        .filter(i => i.status === "payee" && i.created_at && new Date(i.created_at) >= d && new Date(i.created_at) < next)
-        .reduce((s, i) => s + Number(i.amount || 0), 0);
-      return { mois: months[idx] || d.toLocaleString("fr", { month: "short" }), ca: sum };
-    });
-
-    // Commandes — last 4 weeks
-    const commandesData = Array.from({ length: 4 }).map((_, idx) => {
-      const end = new Date(now); end.setDate(now.getDate() - (3 - idx) * 7);
-      const wStart = new Date(end); wStart.setDate(end.getDate() - 7);
-      const count = (orders as any[]).filter(o => o.created_at && new Date(o.created_at) >= wStart && new Date(o.created_at) < end).length;
-      return { semaine: `S${idx + 1}`, commandes: count };
-    });
+    // CA & commandes — buckets adaptés à la période
+    const buckets = period === "day" ? 12 : period === "month" ? 30 : 12;
+    const caData: any[] = [];
+    const commandesData: any[] = [];
+    for (let i = buckets - 1; i >= 0; i--) {
+      let bStart: Date, bEnd: Date, label: string;
+      if (period === "day") {
+        bStart = new Date(now); bStart.setHours(now.getHours() - i, 0, 0, 0);
+        bEnd = new Date(bStart); bEnd.setHours(bStart.getHours() + 1);
+        label = `${bStart.getHours()}h`;
+      } else if (period === "month") {
+        bStart = new Date(now); bStart.setDate(now.getDate() - i); bStart.setHours(0, 0, 0, 0);
+        bEnd = new Date(bStart); bEnd.setDate(bStart.getDate() + 1);
+        label = String(bStart.getDate());
+      } else {
+        bStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        bEnd = new Date(bStart.getFullYear(), bStart.getMonth() + 1, 1);
+        label = bStart.toLocaleString("fr", { month: "short" });
+      }
+      const ca = (invoices as any[])
+        .filter(inv => inv.status === "payee" && inv.created_at && new Date(inv.created_at) >= bStart && new Date(inv.created_at) < bEnd)
+        .reduce((s, inv) => s + Number(inv.amount || 0), 0);
+      const cmd = (orders as any[]).filter(o => o.created_at && new Date(o.created_at) >= bStart && new Date(o.created_at) < bEnd).length;
+      caData.push({ mois: label, ca });
+      commandesData.push({ semaine: label, commandes: cmd });
+    }
 
     // Dépenses par catégorie (sur la période)
     const expenseMap = new Map<string, number>();
