@@ -80,6 +80,7 @@ export function Factures() {
           { key: "amount_paid", label: `Payé (${CURRENCY})`, render: (r) => (r.amount_paid || 0).toLocaleString() },
           { key: "due_date", label: "Échéance", render: (r) => r.due_date ? formatDate(r.due_date) : "—" },
           { key: "status", label: "Statut", render: (r) => <StatusBadge status={r.status} /> },
+          { key: "notes", label: "Notes", render: (r: any) => <span className="text-safe block max-w-[200px]" title={r.notes || ""}>{r.notes || "—"}</span> },
           { key: "actions", label: "", render: (r) => (
             <div className="flex gap-1 justify-end">
               <Button variant="ghost" size="icon" className="h-7 w-7" title="Exporter PDF" onClick={() => exportToPDF(
