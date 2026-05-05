@@ -33,6 +33,7 @@ export function Management() {
   const [form, setForm] = useState({ title: "", description: "", priority: "moyenne", due_date: "", assigned_to: "", department: "" });
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterUser, setFilterUser] = useState<string>("all");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -75,8 +76,13 @@ export function Management() {
     (todos as any[])
       .filter(t => t.assigned_to && t.assigned_by)
       .filter(t => filterStatus === "all" ? true : t.status === filterStatus)
-      .filter(t => filterUser === "all" ? true : t.assigned_to === filterUser),
-  [todos, filterStatus, filterUser]);
+      .filter(t => filterUser === "all" ? true : t.assigned_to === filterUser)
+      .filter(t => {
+        if (!search.trim()) return true;
+        const q = search.toLowerCase();
+        return (t.title || "").toLowerCase().includes(q) || (t.description || "").toLowerCase().includes(q);
+      }),
+  [todos, filterStatus, filterUser, search]);
 
   if (!isAdmin) {
     return (
@@ -137,6 +143,12 @@ export function Management() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-heading">Tâches assignées</CardTitle>
+            <Input
+              placeholder="Rechercher par titre ou description..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="h-8 text-xs mt-2"
+            />
             <div className="grid grid-cols-2 gap-2 pt-2">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
                 <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
