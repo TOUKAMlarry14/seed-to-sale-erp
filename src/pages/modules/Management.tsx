@@ -137,6 +137,24 @@ export function Management() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-heading">Tâches assignées</CardTitle>
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous statuts</SelectItem>
+                  <SelectItem value="a_faire">À faire</SelectItem>
+                  <SelectItem value="en_cours">En cours</SelectItem>
+                  <SelectItem value="termine">Terminé</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterUser} onValueChange={setFilterUser}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Chef" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous chefs</SelectItem>
+                  {chefs.map(c => <SelectItem key={c.id} value={c.id}>{c.full_name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
           </CardHeader>
           <CardContent className="space-y-2">
             {loading ? (
@@ -154,7 +172,14 @@ export function Management() {
                     </p>
                   </div>
                   <Badge variant="outline" className={`text-[8px] ${PRIORITY_COLORS[t.priority] || ""}`}>{t.priority}</Badge>
-                  <Badge variant="outline" className="text-[8px]">{t.status}</Badge>
+                  <Select value={t.status} onValueChange={(v) => updateTodo.mutate({ id: t.id, status: v })}>
+                    <SelectTrigger className="h-6 w-24 text-[10px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="a_faire">À faire</SelectItem>
+                      <SelectItem value="en_cours">En cours</SelectItem>
+                      <SelectItem value="termine">Terminé</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100"
                     onClick={() => deleteTodo.mutate(t.id)}>
                     <Trash2 className="h-3 w-3 text-destructive" />
