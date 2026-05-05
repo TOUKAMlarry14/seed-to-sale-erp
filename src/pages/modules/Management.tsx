@@ -11,6 +11,7 @@ import { useTodos, useCreateTodo, useUpdateTodo, useDeleteTodo } from "@/hooks/u
 import { useAuth } from "@/hooks/useAuth";
 import { ROLE_LABELS } from "@/lib/constants";
 import { toast } from "@/hooks/use-toast";
+import { createNotification } from "@/hooks/useNotifications";
 
 interface Member { id: string; full_name: string; email: string; roles: string[]; }
 
@@ -30,6 +31,8 @@ export function Management() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ title: "", description: "", priority: "moyenne", due_date: "", assigned_to: "", department: "" });
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterUser, setFilterUser] = useState<string>("all");
 
   useEffect(() => {
     (async () => {
@@ -61,13 +64,19 @@ export function Management() {
       return;
     }
     createTodo.mutate(form as any, {
-      onSuccess: () => setForm({ title: "", description: "", priority: "moyenne", due_date: "", assigned_to: "", department: "" }),
+      onSuccess: async () => {
+        await createNotification(form.assigned_to, "Nouvelle tâche assignée", form.title, "info", "/");
+        setForm({ title: "", description: "", priority: "moyenne", due_date: "", assigned_to: "", department: "" });
+      },
     });
   };
 
   const assignedTodos = useMemo(() =>
-    (todos as any[]).filter(t => t.assigned_to && t.assigned_by),
-  [todos]);
+    (todos as any[])
+      .filter(t => t.assigned_to && t.assigned_by)
+      .filter(t => filterStatus === "all" ? true : t.status === filterStatus)
+      .filter(t => filterUser === "all" ? true : t.assigned_to === filterUser),
+  [todos, filterStatus, filterUser]);
 
   if (!isAdmin) {
     return (
