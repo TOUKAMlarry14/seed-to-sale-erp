@@ -16,7 +16,7 @@ import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/NotFound";
 import {
   Catalogue, Clients, Commandes, Factures, Inventaire, Fournisseurs,
-  Livraisons, Transactions, Reporting, Employes, Presences, Paie,
+  Livraisons, Transactions, Reporting, Employes, Presences, Paie, Management,
 } from "@/pages/modules";
 import { Parametres } from "@/pages/modules/Parametres";
 import { Information } from "@/pages/modules/Information";
@@ -64,6 +64,7 @@ const App = () => {
                     <Route path="/employes/:id" element={<EmployeDetail />} />
                     <Route path="/presences" element={<Presences />} />
                     <Route path="/paie" element={<Paie />} />
+                    <Route path="/management" element={<Management />} />
                     <Route path="/parametres" element={<Parametres />} />
                     <Route path="/gestion-comptes" element={<GestionComptes />} />
                     <Route path="/information" element={<Information />} />

@@ -10,3 +10,4 @@ export { Reporting } from "./Reporting";
 export { Employes } from "./Employes";
 export { Presences } from "./Presences";
 export { Paie } from "./Paie";
+export { Management } from "./Management";
