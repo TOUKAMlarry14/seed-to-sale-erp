@@ -24,6 +24,7 @@ export const fr: Record<string, string> = {
   "nav.information": "Information",
   "nav.logs": "Logs Système",
   "nav.accounts": "Gestion comptes",
+  "nav.management": "Management",
   "section.general": "Général",
   "section.sales": "Ventes (M1)",
   "section.stock": "Stocks & Logistique (M2)",
