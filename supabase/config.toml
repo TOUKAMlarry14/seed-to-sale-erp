@@ -1,7 +1,4 @@
 project_id = "qrhlcodcpmgejtesklsm"
 
-[functions.reset-passwords]
-verify_jwt = false
-
 [functions.seed-users]
 verify_jwt = false
