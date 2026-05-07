@@ -14,7 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { CURRENCY } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, Pencil, Loader2, Trash2, Eye, PlusCircle, Power } from "lucide-react";
+import { Plus, Pencil, Loader2, Trash2, Eye, PlusCircle, Power, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
@@ -124,7 +124,26 @@ export function Employes() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div><Label>Validité bonus (jusqu'au)</Label><Input type="date" value={form.bonus_expiry} onChange={e => setForm({ ...form, bonus_expiry: e.target.value })} /></div>
-                  <div><Label>URL Avatar</Label><Input value={form.avatar_url} onChange={e => setForm({ ...form, avatar_url: e.target.value })} placeholder="https://..." /></div>
+                  <div>
+                    <Label>Photo</Label>
+                    <div className="flex items-center gap-2">
+                      <Input value={form.avatar_url} onChange={e => setForm({ ...form, avatar_url: e.target.value })} placeholder="URL ou upload" />
+                      <Button type="button" variant="outline" size="icon" asChild>
+                        <label className="cursor-pointer">
+                          <Upload className="h-3.5 w-3.5" />
+                          <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                            const file = e.target.files?.[0]; if (!file) return;
+                            const path = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+                            const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+                            if (error) { toast({ title: "Upload échoué", description: error.message, variant: "destructive" }); return; }
+                            const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+                            setForm(f => ({ ...f, avatar_url: data.publicUrl }));
+                            toast({ title: "Photo téléversée" });
+                          }} />
+                        </label>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
                 <Button onClick={handleSubmit} disabled={!form.name || createEmployee.isPending || updateEmployee.isPending}>
                   {(createEmployee.isPending || updateEmployee.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
