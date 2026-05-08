@@ -7,9 +7,18 @@ const corsHeaders = {
 
 interface UserToCreate {
   email: string;
-  password: string;
   full_name: string;
   role: string;
+}
+
+function generatePassword(length = 16): string {
+  const charset = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*";
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  let pwd = "";
+  for (let i = 0; i < length; i++) pwd += charset[bytes[i] % charset.length];
+  // Ensure complexity
+  return pwd.replace(/^./, "A").replace(/.$/, "9") + "!";
 }
 
 Deno.serve(async (req) => {
@@ -50,44 +59,36 @@ Deno.serve(async (req) => {
     );
 
     const users: UserToCreate[] = [
-      // Admin
-      { email: "admin@agroconnect.cm", password: "Admin2026!", full_name: "Admin AgroConnect", role: "admin" },
-      // Chefs de service
-      { email: "chef.commercial@agroconnect.cm", password: "Chef2026!", full_name: "Claudine Ngassa", role: "commercial" },
-      { email: "chef.logistique@agroconnect.cm", password: "Chef2026!", full_name: "Paul Atangana", role: "logistique" },
-      { email: "chef.finance@agroconnect.cm", password: "Chef2026!", full_name: "Cécile Eyanga", role: "financier" },
-      { email: "chef.rh@agroconnect.cm", password: "Chef2026!", full_name: "André Tamba", role: "rh" },
-      // Employés commerciaux
-      { email: "jean.nkomo@agroconnect.cm", password: "Employe2026!", full_name: "Jean-Pierre Nkomo", role: "commercial" },
-      { email: "sylvie.mbala@agroconnect.cm", password: "Employe2026!", full_name: "Sylvie Mbala", role: "commercial" },
-      // Employés logistique
-      { email: "marie.fotso@agroconnect.cm", password: "Employe2026!", full_name: "Marie Fotso", role: "logistique" },
-      // Employé finance
-      { email: "diane.mbouda@agroconnect.cm", password: "Employe2026!", full_name: "Diane Mbouda", role: "financier" },
-      // Livreurs
-      { email: "fabrice.onana@agroconnect.cm", password: "Employe2026!", full_name: "Fabrice Onana", role: "livreur" },
-      { email: "herve.kamga@agroconnect.cm", password: "Employe2026!", full_name: "Hervé Kamga", role: "livreur" },
-      { email: "samuel.ekotto@agroconnect.cm", password: "Employe2026!", full_name: "Samuel Ekotto", role: "livreur" },
-      { email: "eric.tchinda@agroconnect.cm", password: "Employe2026!", full_name: "Eric Tchinda", role: "livreur" },
-      { email: "patrick.nkwelle@agroconnect.cm", password: "Employe2026!", full_name: "Patrick Nkwelle", role: "livreur" },
-      // Employés RH
-      { email: "rose.biya@agroconnect.cm", password: "Employe2026!", full_name: "Rose Biya", role: "rh" },
+      { email: "admin@agroconnect.cm", full_name: "Admin AgroConnect", role: "admin" },
+      { email: "chef.commercial@agroconnect.cm", full_name: "Claudine Ngassa", role: "commercial" },
+      { email: "chef.logistique@agroconnect.cm", full_name: "Paul Atangana", role: "logistique" },
+      { email: "chef.finance@agroconnect.cm", full_name: "Cécile Eyanga", role: "financier" },
+      { email: "chef.rh@agroconnect.cm", full_name: "André Tamba", role: "rh" },
+      { email: "jean.nkomo@agroconnect.cm", full_name: "Jean-Pierre Nkomo", role: "commercial" },
+      { email: "sylvie.mbala@agroconnect.cm", full_name: "Sylvie Mbala", role: "commercial" },
+      { email: "marie.fotso@agroconnect.cm", full_name: "Marie Fotso", role: "logistique" },
+      { email: "diane.mbouda@agroconnect.cm", full_name: "Diane Mbouda", role: "financier" },
+      { email: "fabrice.onana@agroconnect.cm", full_name: "Fabrice Onana", role: "livreur" },
+      { email: "herve.kamga@agroconnect.cm", full_name: "Hervé Kamga", role: "livreur" },
+      { email: "samuel.ekotto@agroconnect.cm", full_name: "Samuel Ekotto", role: "livreur" },
+      { email: "eric.tchinda@agroconnect.cm", full_name: "Eric Tchinda", role: "livreur" },
+      { email: "patrick.nkwelle@agroconnect.cm", full_name: "Patrick Nkwelle", role: "livreur" },
+      { email: "rose.biya@agroconnect.cm", full_name: "Rose Biya", role: "rh" },
     ];
 
     const results: any[] = [];
 
     for (const u of users) {
+      const password = generatePassword();
       // Check if user already exists
       const { data: existing } = await supabaseAdmin.auth.admin.listUsers();
       const found = existing?.users?.find((eu: any) => eu.email === u.email);
       if (found) {
-        // Force-reset password + confirm email so seed credentials always work
         await supabaseAdmin.auth.admin.updateUserById(found.id, {
-          password: u.password,
+          password,
           email_confirm: true,
           user_metadata: { full_name: u.full_name },
         });
-        // Ensure role exists
         const { data: roleCheck } = await supabaseAdmin
           .from("user_roles")
           .select("id")
@@ -97,13 +98,13 @@ Deno.serve(async (req) => {
         if (!roleCheck) {
           await supabaseAdmin.from("user_roles").insert({ user_id: found.id, role: u.role });
         }
-        results.push({ email: u.email, status: "reset", id: found.id });
+        results.push({ email: u.email, status: "reset", id: found.id, password });
         continue;
       }
 
       const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email: u.email,
-        password: u.password,
+        password,
         email_confirm: true,
         user_metadata: { full_name: u.full_name },
       });
@@ -113,13 +114,16 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // Assign role
       await supabaseAdmin.from("user_roles").insert({ user_id: authData.user.id, role: u.role });
 
-      results.push({ email: u.email, status: "created", id: authData.user.id });
+      results.push({ email: u.email, status: "created", id: authData.user.id, password });
     }
 
-    return new Response(JSON.stringify({ success: true, results }), {
+    return new Response(JSON.stringify({
+      success: true,
+      warning: "Stockez ces mots de passe immédiatement — ils ne seront plus jamais affichés.",
+      results,
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error: any) {
