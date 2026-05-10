@@ -1,8 +1,10 @@
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CURRENCY } from "@/lib/constants";
 import { useTranslation } from "@/contexts/I18nContext";
 import { ShoppingCart, FileText, Users, TrendingUp } from "lucide-react";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { DateRangeFilter, type DateRangePreset } from "@/components/DateRangeFilter";
 
 const COLORS = ["hsl(214, 89%, 34%)", "hsl(148, 58%, 26%)", "hsl(38, 92%, 50%)", "hsl(4, 84%, 47%)", "hsl(215, 16%, 47%)"];
 
@@ -17,6 +19,14 @@ const weeklyOrders = [
 
 export default function CommercialDashboard() {
   const { t } = useTranslation();
+  const [range, setRange] = useState<DateRangePreset>("month");
+  const filteredWeeklyOrders = useMemo(() => {
+    if (range === "day") return weeklyOrders.slice(-1);
+    if (range === "week") return weeklyOrders.slice(-1);
+    if (range === "month") return weeklyOrders;
+    if (range === "year") return weeklyOrders;
+    return weeklyOrders;
+  }, [range]);
   const kpis = [
     { label: t("dashboard.daily_orders"), value: "23", icon: ShoppingCart, color: "text-primary" },
     { label: t("dashboard.monthly_revenue"), value: `12 450 000 ${CURRENCY}`, icon: TrendingUp, color: "text-success" },
@@ -30,6 +40,7 @@ export default function CommercialDashboard() {
         <h1 className="text-2xl font-heading font-bold">{t("dashboard.commercial_title")}</h1>
         <p className="text-sm text-muted-foreground">{t("dashboard.commercial_subtitle")}</p>
       </div>
+      <DateRangeFilter value={range} onChange={setRange} />
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <Card key={kpi.label}>
@@ -46,7 +57,7 @@ export default function CommercialDashboard() {
           <CardContent className="pt-6">
             <p className="text-sm font-heading font-semibold mb-4">{t("dashboard.weekly_orders")}</p>
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={weeklyOrders}>
+              <BarChart data={filteredWeeklyOrders}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="semaine" tick={{ fill: 'hsl(215, 16%, 47%)' }} />
                 <YAxis tick={{ fill: 'hsl(215, 16%, 47%)' }} />
