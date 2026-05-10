@@ -24,7 +24,7 @@ export function exportToPDF(
   // Build an HTML table and print it
   const colWidths = columns.map(() => `${Math.floor(100 / columns.length)}%`);
   
-  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
+  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
 <style>
   @media print { @page { size: A4 landscape; margin: 15mm; } }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #222; margin: 0; padding: 20px; }
@@ -41,7 +41,7 @@ export function exportToPDF(
 </style></head><body>`;
   
   html += `<div class="header"><div><h1>AgroConnect SARL</h1><p>Distribution Agroalimentaire — Douala, Cameroun</p></div></div>`;
-  html += `<div class="title">${title}</div>`;
+  html += `<div class="title">${escapeHtml(title)}</div>`;
   html += `<div class="meta">Généré le ${new Date().toLocaleDateString("fr-FR")} à ${new Date().toLocaleTimeString("fr-FR")} — ${data.length} enregistrement(s)</div>`;
   
   html += `<table><thead><tr>`;
