@@ -1,11 +1,14 @@
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CURRENCY } from "@/lib/constants";
 import { useTranslation } from "@/contexts/I18nContext";
 import { Users, CalendarCheck, Wallet, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { DateRangeFilter, type DateRangePreset } from "@/components/DateRangeFilter";
 
 export default function RHDashboard() {
   const { t } = useTranslation();
+  const [range, setRange] = useState<DateRangePreset>("all");
 
   const kpis = [
     { label: t("dashboard.present_today"), value: "18 / 22", icon: Users, color: "text-success" },
@@ -17,6 +20,10 @@ export default function RHDashboard() {
   const presenceData = [
     { semaine: "S1", taux: 90 }, { semaine: "S2", taux: 85 }, { semaine: "S3", taux: 78 }, { semaine: "S4", taux: 82 },
   ];
+  const filteredPresence = useMemo(() => {
+    const map: Record<DateRangePreset, number> = { day: 1, week: 1, month: 4, year: 4, all: 4 };
+    return presenceData.slice(-map[range]);
+  }, [range]);
 
   const conges = [
     { nom: "Jean-Pierre Nkomo", debut: "25 Mar", fin: "28 Mar", statut: t("dashboard.pending") },
@@ -29,6 +36,7 @@ export default function RHDashboard() {
         <h1 className="text-2xl font-heading font-bold">{t("dashboard.rh_title")}</h1>
         <p className="text-sm text-muted-foreground">{t("dashboard.rh_subtitle")}</p>
       </div>
+      <DateRangeFilter value={range} onChange={setRange} />
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <Card key={kpi.label}>
@@ -45,7 +53,7 @@ export default function RHDashboard() {
           <CardContent className="pt-6">
             <p className="text-sm font-heading font-semibold mb-4">{t("dashboard.weekly_presence")}</p>
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={presenceData}>
+              <BarChart data={filteredPresence}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="semaine" tick={{ fill: 'hsl(215, 16%, 47%)' }} />
                 <YAxis domain={[0, 100]} tick={{ fill: 'hsl(215, 16%, 47%)' }} />
