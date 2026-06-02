@@ -3,35 +3,53 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "@/contexts/I18nContext";
 import { AlertTriangle, Package, Truck, TrendingDown } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { DateRangeFilter, type DateRangePreset } from "@/components/DateRangeFilter";
+import { DateRangeFilter, getRangeStart, type DateRangePreset } from "@/components/DateRangeFilter";
+import { useProducts } from "@/hooks/useProducts";
+import { useDeliveries } from "@/hooks/useDeliveries";
+import { useStockMovements } from "@/hooks/useStock";
 
 export default function LogistiqueDashboard() {
   const { t } = useTranslation();
-  const [range, setRange] = useState<DateRangePreset>("all");
+  const [range, setRange] = useState<DateRangePreset>("week");
+
+  const { data: products = [] } = useProducts();
+  const { data: deliveries = [] } = useDeliveries();
+  const { data: movements = [] } = useStockMovements();
+
+  const start = useMemo(() => getRangeStart(range), [range]);
+  const todayStart = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
+
+  const outOfStock = (products as any[]).filter((p) => (p.stock_qty ?? 0) <= (p.stock_min ?? 0)).length;
+  const dailyDeliveries = (deliveries as any[]).filter((d) => new Date(d.created_at) >= todayStart).length;
+  const filteredMovements = (movements as any[]).filter((m) => !start || new Date(m.created_at) >= start);
+  const weeklyEntries = filteredMovements.filter((m) => m.type === "entree").reduce((s, m) => s + Number(m.quantity || 0), 0);
+
+  const filteredDeliveries = (deliveries as any[]).filter((d) => !start || new Date(d.created_at) >= start);
+  const delivered = filteredDeliveries.filter((d) => d.status === "livree").length;
+  const deliveryRate = filteredDeliveries.length ? Math.round((delivered / filteredDeliveries.length) * 100) : 0;
 
   const kpis = [
-    { label: t("dashboard.out_of_stock"), value: "4", icon: AlertTriangle, color: "text-destructive" },
-    { label: t("dashboard.daily_deliveries"), value: "7", icon: Truck, color: "text-primary" },
-    { label: t("dashboard.weekly_entries"), value: "12", icon: Package, color: "text-success" },
-    { label: t("dashboard.delivery_rate"), value: "89%", icon: TrendingDown, color: "text-warning" },
+    { label: t("dashboard.out_of_stock"), value: String(outOfStock), icon: AlertTriangle, color: "text-destructive" },
+    { label: t("dashboard.daily_deliveries"), value: String(dailyDeliveries), icon: Truck, color: "text-primary" },
+    { label: t("dashboard.weekly_entries"), value: String(weeklyEntries), icon: Package, color: "text-success" },
+    { label: t("dashboard.delivery_rate"), value: `${deliveryRate}%`, icon: TrendingDown, color: "text-warning" },
   ];
 
-  const stockEntries = [
-    { jour: t("chart.day.mon"), entrees: 5 }, { jour: t("chart.day.tue"), entrees: 3 }, { jour: t("chart.day.wed"), entrees: 7 },
-    { jour: t("chart.day.thu"), entrees: 2 }, { jour: t("chart.day.fri"), entrees: 4 },
-  ];
   const filteredEntries = useMemo(() => {
-    const map: Record<DateRangePreset, number> = { day: 1, week: 5, month: 5, year: 5, all: 5 };
-    return stockEntries.slice(-map[range]);
-  }, [range]);
+    const buckets = new Map<string, number>();
+    filteredMovements.filter((m) => m.type === "entree").forEach((m) => {
+      const d = new Date(m.created_at);
+      const key = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+      buckets.set(key, (buckets.get(key) ?? 0) + Number(m.quantity || 0));
+    });
+    return Array.from(buckets.entries()).map(([jour, entrees]) => ({ jour, entrees }));
+  }, [filteredMovements]);
 
-  const restock = [
-    { produit: "Huile de palme 5L", stock: 3, min: 20 },
-    { produit: "Sucre 50kg", stock: 5, min: 15 },
-    { produit: "Farine de blé 25kg", stock: 8, min: 20 },
-    { produit: "Sel fin 1kg", stock: 12, min: 30 },
-    { produit: "Lait concentré", stock: 6, min: 25 },
-  ];
+  const restock = (products as any[])
+    .filter((p) => (p.stock_qty ?? 0) <= (p.stock_min ?? 0))
+    .sort((a, b) => (a.stock_qty ?? 0) - (b.stock_qty ?? 0))
+    .slice(0, 5)
+    .map((p) => ({ produit: p.name, stock: p.stock_qty ?? 0, min: p.stock_min ?? 0 }));
 
   return (
     <div className="space-y-6">
