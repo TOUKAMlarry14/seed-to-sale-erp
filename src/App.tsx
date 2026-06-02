@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { I18nProvider } from "@/contexts/I18nContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { RoleRoute } from "@/components/RoleRoute";
 import { AppLayout } from "@/components/AppLayout";
 import { SplashScreen } from "@/components/SplashScreen";
 import Login from "@/pages/Login";
@@ -51,24 +52,24 @@ const App = () => {
                     }
                   >
                     <Route path="/" element={<Dashboard />} />
-                    <Route path="/catalogue" element={<Catalogue />} />
-                    <Route path="/clients" element={<Clients />} />
-                    <Route path="/commandes" element={<Commandes />} />
-                    <Route path="/factures" element={<Factures />} />
-                    <Route path="/inventaire" element={<Inventaire />} />
-                    <Route path="/fournisseurs" element={<Fournisseurs />} />
-                    <Route path="/livraisons" element={<Livraisons />} />
-                    <Route path="/transactions" element={<Transactions />} />
-                    <Route path="/reporting" element={<Reporting />} />
-                    <Route path="/employes" element={<Employes />} />
-                    <Route path="/employes/:id" element={<EmployeDetail />} />
-                    <Route path="/presences" element={<Presences />} />
-                    <Route path="/paie" element={<Paie />} />
-                    <Route path="/management" element={<Management />} />
-                    <Route path="/parametres" element={<Parametres />} />
-                    <Route path="/gestion-comptes" element={<GestionComptes />} />
+                    <Route path="/catalogue" element={<RoleRoute roles={["commercial"]}><Catalogue /></RoleRoute>} />
+                    <Route path="/clients" element={<RoleRoute roles={["commercial"]}><Clients /></RoleRoute>} />
+                    <Route path="/commandes" element={<RoleRoute roles={["commercial"]}><Commandes /></RoleRoute>} />
+                    <Route path="/factures" element={<RoleRoute roles={["commercial", "financier"]}><Factures /></RoleRoute>} />
+                    <Route path="/inventaire" element={<RoleRoute roles={["logistique"]}><Inventaire /></RoleRoute>} />
+                    <Route path="/fournisseurs" element={<RoleRoute roles={["logistique"]}><Fournisseurs /></RoleRoute>} />
+                    <Route path="/livraisons" element={<RoleRoute roles={["logistique", "livreur"]}><Livraisons /></RoleRoute>} />
+                    <Route path="/transactions" element={<RoleRoute roles={["financier"]}><Transactions /></RoleRoute>} />
+                    <Route path="/reporting" element={<RoleRoute roles={["financier"]}><Reporting /></RoleRoute>} />
+                    <Route path="/employes" element={<RoleRoute roles={["rh"]}><Employes /></RoleRoute>} />
+                    <Route path="/employes/:id" element={<RoleRoute roles={["rh"]}><EmployeDetail /></RoleRoute>} />
+                    <Route path="/presences" element={<RoleRoute roles={["rh"]}><Presences /></RoleRoute>} />
+                    <Route path="/paie" element={<RoleRoute roles={["rh"]}><Paie /></RoleRoute>} />
+                    <Route path="/management" element={<RoleRoute roles={[]}><Management /></RoleRoute>} />
+                    <Route path="/parametres" element={<RoleRoute roles={[]}><Parametres /></RoleRoute>} />
+                    <Route path="/gestion-comptes" element={<RoleRoute roles={[]}><GestionComptes /></RoleRoute>} />
                     <Route path="/information" element={<Information />} />
-                    <Route path="/logs" element={<LogsSysteme />} />
+                    <Route path="/logs" element={<RoleRoute roles={["techadmin" as any]} adminOnly={false}><LogsSysteme /></RoleRoute>} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
