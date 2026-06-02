@@ -1,10 +1,13 @@
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "@/contexts/I18nContext";
 import { AlertTriangle, Package, Truck, TrendingDown } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { DateRangeFilter, type DateRangePreset } from "@/components/DateRangeFilter";
 
 export default function LogistiqueDashboard() {
   const { t } = useTranslation();
+  const [range, setRange] = useState<DateRangePreset>("all");
 
   const kpis = [
     { label: t("dashboard.out_of_stock"), value: "4", icon: AlertTriangle, color: "text-destructive" },
@@ -17,6 +20,10 @@ export default function LogistiqueDashboard() {
     { jour: t("chart.day.mon"), entrees: 5 }, { jour: t("chart.day.tue"), entrees: 3 }, { jour: t("chart.day.wed"), entrees: 7 },
     { jour: t("chart.day.thu"), entrees: 2 }, { jour: t("chart.day.fri"), entrees: 4 },
   ];
+  const filteredEntries = useMemo(() => {
+    const map: Record<DateRangePreset, number> = { day: 1, week: 5, month: 5, year: 5, all: 5 };
+    return stockEntries.slice(-map[range]);
+  }, [range]);
 
   const restock = [
     { produit: "Huile de palme 5L", stock: 3, min: 20 },
@@ -32,6 +39,7 @@ export default function LogistiqueDashboard() {
         <h1 className="text-2xl font-heading font-bold">{t("dashboard.logistique_title")}</h1>
         <p className="text-sm text-muted-foreground">{t("dashboard.logistique_subtitle")}</p>
       </div>
+      <DateRangeFilter value={range} onChange={setRange} />
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <Card key={kpi.label}>
@@ -48,7 +56,7 @@ export default function LogistiqueDashboard() {
           <CardContent className="pt-6">
             <p className="text-sm font-heading font-semibold mb-4">{t("dashboard.stock_entries_week")}</p>
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={stockEntries}>
+              <BarChart data={filteredEntries}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="jour" tick={{ fill: 'hsl(215, 16%, 47%)' }} />
                 <YAxis tick={{ fill: 'hsl(215, 16%, 47%)' }} />
