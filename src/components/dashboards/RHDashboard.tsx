@@ -4,31 +4,78 @@ import { CURRENCY } from "@/lib/constants";
 import { useTranslation } from "@/contexts/I18nContext";
 import { Users, CalendarCheck, Wallet, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { DateRangeFilter, type DateRangePreset } from "@/components/DateRangeFilter";
+import { DateRangeFilter, getRangeStart, type DateRangePreset } from "@/components/DateRangeFilter";
+import { useEmployees } from "@/hooks/useEmployees";
+import { useAllAttendances } from "@/hooks/useAttendances";
+import { usePayslips } from "@/hooks/usePayslips";
+
+const fmt = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} ${CURRENCY}`;
 
 export default function RHDashboard() {
   const { t } = useTranslation();
-  const [range, setRange] = useState<DateRangePreset>("all");
+  const [range, setRange] = useState<DateRangePreset>("month");
+
+  const { data: employees = [] } = useEmployees();
+  const { data: attendances = [] } = useAllAttendances();
+  const { data: payslips = [] } = usePayslips();
+
+  const start = useMemo(() => getRangeStart(range), [range]);
+  const today = new Date().toISOString().split("T")[0];
+  const activeEmployees = (employees as any[]).filter((e) => e.is_active !== false);
+
+  const presentToday = (attendances as any[]).filter((a) => a.date === today && a.status === "present").length;
+  const ongoingLeaves = (attendances as any[]).filter((a) => {
+    if (a.status !== "conge") return false;
+    const s = a.start_date ? new Date(a.start_date) : new Date(a.date);
+    const e = a.end_date ? new Date(a.end_date) : s;
+    const now = new Date();
+    return s <= now && now <= e;
+  }).length;
+
+  const now = new Date();
+  const payrollTotal = (payslips as any[])
+    .filter((p) => p.year === now.getFullYear() && p.month === now.getMonth() + 1)
+    .reduce((s, p) => s + Number(p.net_salary || 0), 0);
+
+  const filteredAtt = (attendances as any[]).filter((a) => !start || new Date(a.date) >= start);
+  const presenceRate = filteredAtt.length
+    ? Math.round((filteredAtt.filter((a) => a.status === "present").length / filteredAtt.length) * 100)
+    : 0;
 
   const kpis = [
-    { label: t("dashboard.present_today"), value: "18 / 22", icon: Users, color: "text-success" },
-    { label: t("dashboard.ongoing_leaves"), value: "2", icon: CalendarCheck, color: "text-warning" },
-    { label: t("dashboard.payroll_total"), value: `3 100 000 ${CURRENCY}`, icon: Wallet, color: "text-primary" },
-    { label: t("dashboard.presence_rate"), value: "82%", icon: TrendingUp, color: "text-primary" },
+    { label: t("dashboard.present_today"), value: `${presentToday} / ${activeEmployees.length}`, icon: Users, color: "text-success" },
+    { label: t("dashboard.ongoing_leaves"), value: String(ongoingLeaves), icon: CalendarCheck, color: "text-warning" },
+    { label: t("dashboard.payroll_total"), value: fmt(payrollTotal), icon: Wallet, color: "text-primary" },
+    { label: t("dashboard.presence_rate"), value: `${presenceRate}%`, icon: TrendingUp, color: "text-primary" },
   ];
 
-  const presenceData = [
-    { semaine: "S1", taux: 90 }, { semaine: "S2", taux: 85 }, { semaine: "S3", taux: 78 }, { semaine: "S4", taux: 82 },
-  ];
   const filteredPresence = useMemo(() => {
-    const map: Record<DateRangePreset, number> = { day: 1, week: 1, month: 4, year: 4, all: 4 };
-    return presenceData.slice(-map[range]);
-  }, [range]);
+    const buckets = new Map<string, { total: number; present: number }>();
+    filteredAtt.forEach((a) => {
+      const d = new Date(a.date);
+      // ISO week-ish key: YYYY-Wn
+      const onejan = new Date(d.getFullYear(), 0, 1);
+      const week = Math.ceil((((d.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+      const key = `S${week}`;
+      const b = buckets.get(key) ?? { total: 0, present: 0 };
+      b.total += 1;
+      if (a.status === "present") b.present += 1;
+      buckets.set(key, b);
+    });
+    return Array.from(buckets.entries())
+      .map(([semaine, b]) => ({ semaine, taux: b.total ? Math.round((b.present / b.total) * 100) : 0 }))
+      .slice(-8);
+  }, [filteredAtt]);
 
-  const conges = [
-    { nom: "Jean-Pierre Nkomo", debut: "25 Mar", fin: "28 Mar", statut: t("dashboard.pending") },
-    { nom: "Marie Fotso", debut: "01 Avr", fin: "05 Avr", statut: t("dashboard.approved") },
-  ];
+  const conges = (attendances as any[])
+    .filter((a) => a.status === "conge")
+    .slice(0, 5)
+    .map((a) => ({
+      nom: a.employees?.name ?? "—",
+      debut: a.start_date ? new Date(a.start_date).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }) : "—",
+      fin: a.end_date ? new Date(a.end_date).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }) : "—",
+      statut: t("dashboard.approved"),
+    }));
 
   return (
     <div className="space-y-6">

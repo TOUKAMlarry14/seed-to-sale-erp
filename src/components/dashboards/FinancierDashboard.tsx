@@ -4,36 +4,72 @@ import { CURRENCY } from "@/lib/constants";
 import { useTranslation } from "@/contexts/I18nContext";
 import { Wallet, TrendingUp, FileText, ArrowDownRight } from "lucide-react";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { DateRangeFilter, type DateRangePreset } from "@/components/DateRangeFilter";
+import { DateRangeFilter, getRangeStart, type DateRangePreset } from "@/components/DateRangeFilter";
+import { useTransactions } from "@/hooks/useTransactions";
+import { useInvoices } from "@/hooks/useInvoices";
 
 const COLORS = ["hsl(214, 89%, 34%)", "hsl(148, 58%, 26%)", "hsl(38, 92%, 50%)", "hsl(4, 84%, 47%)", "hsl(215, 16%, 47%)"];
 const formatCFA = (v: number) => `${(v / 1000000).toFixed(1)}M`;
-
-const tresorerieData = [
-  { mois: "Oct", solde: 6200000 }, { mois: "Nov", solde: 6800000 }, { mois: "Déc", solde: 7500000 },
-  { mois: "Jan", solde: 7100000 }, { mois: "Fév", solde: 7900000 }, { mois: "Mar", solde: 8320000 },
-];
+const fmt = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} ${CURRENCY}`;
 
 export default function FinancierDashboard() {
   const { t } = useTranslation();
-  const [range, setRange] = useState<DateRangePreset>("all");
+  const [range, setRange] = useState<DateRangePreset>("month");
 
+  const { data: transactions = [] } = useTransactions();
+  const { data: invoices = [] } = useInvoices();
+
+  const start = useMemo(() => getRangeStart(range), [range]);
+  const monthStart = useMemo(() => { const d = new Date(); d.setDate(1); d.setHours(0,0,0,0); return d; }, []);
+
+  const filteredTx = useMemo(
+    () => (transactions as any[]).filter((t) => !start || new Date(t.date) >= start),
+    [transactions, start]
+  );
+
+  const totalIncome = filteredTx.filter((t) => t.type === "recette").reduce((s, t) => s + Number(t.amount || 0), 0);
+  const totalExpense = filteredTx.filter((t) => t.type === "depense").reduce((s, t) => s + Number(t.amount || 0), 0);
+  const cashBalance = (transactions as any[]).reduce((s, t) => s + (t.type === "recette" ? 1 : -1) * Number(t.amount || 0), 0);
+
+  const monthlyRevenue = (invoices as any[])
+    .filter((i) => i.status === "paye" && new Date(i.paid_at ?? i.created_at) >= monthStart)
+    .reduce((s, i) => s + Number(i.amount_paid || 0), 0);
+  const unpaidAmount = (invoices as any[])
+    .filter((i) => i.status !== "paye")
+    .reduce((s, i) => s + (Number(i.amount || 0) - Number(i.amount_paid || 0)), 0);
+
+  // Cash evolution: running balance grouped by month over filtered range
   const filteredTresorerie = useMemo(() => {
-    const map: Record<DateRangePreset, number> = { day: 1, week: 2, month: 3, year: 6, all: 6 };
-    return tresorerieData.slice(-map[range]);
-  }, [range]);
+    const sorted = [...(transactions as any[])].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    const buckets = new Map<string, number>();
+    let running = 0;
+    sorted.forEach((t) => {
+      running += (t.type === "recette" ? 1 : -1) * Number(t.amount || 0);
+      const d = new Date(t.date);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      buckets.set(key, running);
+    });
+    const arr = Array.from(buckets.entries()).map(([mois, solde]) => ({ mois, solde }));
+    return start ? arr.filter((p) => new Date(p.mois + "-01") >= start) : arr;
+  }, [transactions, start]);
 
-  const depensesData = [
-    { name: t("chart.purchases"), value: 5200000 }, { name: t("chart.salaries"), value: 3100000 }, { name: t("chart.transport"), value: 1400000 },
-    { name: t("chart.rent"), value: 800000 }, { name: t("chart.other"), value: 600000 },
-  ];
+  const depensesData = useMemo(() => {
+    const map = new Map<string, number>();
+    filteredTx.filter((t) => t.type === "depense").forEach((t) => {
+      map.set(t.category, (map.get(t.category) ?? 0) + Number(t.amount || 0));
+    });
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, value]) => ({ name, value }));
+  }, [filteredTx]);
 
   const kpis = [
-    { label: t("dashboard.cash_balance"), value: `8 320 000 ${CURRENCY}`, icon: Wallet, color: "text-success" },
-    { label: t("dashboard.monthly_revenue"), value: `12 450 000 ${CURRENCY}`, icon: TrendingUp, color: "text-primary" },
-    { label: t("reporting.unpaid_invoices"), value: `1 850 000 ${CURRENCY}`, icon: FileText, color: "text-destructive" },
-    { label: t("dashboard.month_expenses"), value: `4 130 000 ${CURRENCY}`, icon: ArrowDownRight, color: "text-warning" },
+    { label: t("dashboard.cash_balance"), value: fmt(cashBalance), icon: Wallet, color: "text-success" },
+    { label: t("dashboard.monthly_revenue"), value: fmt(monthlyRevenue), icon: TrendingUp, color: "text-primary" },
+    { label: t("reporting.unpaid_invoices"), value: fmt(unpaidAmount), icon: FileText, color: "text-destructive" },
+    { label: t("dashboard.month_expenses"), value: fmt(totalExpense), icon: ArrowDownRight, color: "text-warning" },
   ];
+  void totalIncome;
 
   return (
     <div className="space-y-6">
