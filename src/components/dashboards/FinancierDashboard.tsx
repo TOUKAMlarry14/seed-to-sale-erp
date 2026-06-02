@@ -1,8 +1,10 @@
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CURRENCY } from "@/lib/constants";
 import { useTranslation } from "@/contexts/I18nContext";
 import { Wallet, TrendingUp, FileText, ArrowDownRight } from "lucide-react";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { DateRangeFilter, type DateRangePreset } from "@/components/DateRangeFilter";
 
 const COLORS = ["hsl(214, 89%, 34%)", "hsl(148, 58%, 26%)", "hsl(38, 92%, 50%)", "hsl(4, 84%, 47%)", "hsl(215, 16%, 47%)"];
 const formatCFA = (v: number) => `${(v / 1000000).toFixed(1)}M`;
@@ -14,6 +16,12 @@ const tresorerieData = [
 
 export default function FinancierDashboard() {
   const { t } = useTranslation();
+  const [range, setRange] = useState<DateRangePreset>("all");
+
+  const filteredTresorerie = useMemo(() => {
+    const map: Record<DateRangePreset, number> = { day: 1, week: 2, month: 3, year: 6, all: 6 };
+    return tresorerieData.slice(-map[range]);
+  }, [range]);
 
   const depensesData = [
     { name: t("chart.purchases"), value: 5200000 }, { name: t("chart.salaries"), value: 3100000 }, { name: t("chart.transport"), value: 1400000 },
@@ -33,6 +41,7 @@ export default function FinancierDashboard() {
         <h1 className="text-2xl font-heading font-bold">{t("dashboard.finance_title")}</h1>
         <p className="text-sm text-muted-foreground">{t("dashboard.finance_subtitle")}</p>
       </div>
+      <DateRangeFilter value={range} onChange={setRange} />
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <Card key={kpi.label}>
@@ -49,7 +58,7 @@ export default function FinancierDashboard() {
           <CardContent className="pt-6">
             <p className="text-sm font-heading font-semibold mb-4">{t("dashboard.cash_evolution")}</p>
             <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={tresorerieData}>
+              <LineChart data={filteredTresorerie}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="mois" tick={{ fill: 'hsl(215, 16%, 47%)', fontSize: 12 }} />
                 <YAxis tickFormatter={formatCFA} tick={{ fill: 'hsl(215, 16%, 47%)', fontSize: 12 }} />
