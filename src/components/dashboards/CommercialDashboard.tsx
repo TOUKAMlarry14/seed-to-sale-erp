@@ -5,33 +5,95 @@ import { useTranslation } from "@/contexts/I18nContext";
 import { ShoppingCart, FileText, Users, TrendingUp } from "lucide-react";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { DateRangeFilter, type DateRangePreset } from "@/components/DateRangeFilter";
+import { useOrders } from "@/hooks/useOrders";
+import { useInvoices } from "@/hooks/useInvoices";
+import { useClients } from "@/hooks/useClients";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const COLORS = ["hsl(214, 89%, 34%)", "hsl(148, 58%, 26%)", "hsl(38, 92%, 50%)", "hsl(4, 84%, 47%)", "hsl(215, 16%, 47%)"];
 
-const topProducts = [
-  { name: "Riz parfumé 25kg", value: 85 }, { name: "Huile de palme 5L", value: 62 },
-  { name: "Sucre en poudre 50kg", value: 45 }, { name: "Farine de blé 25kg", value: 38 }, { name: "Sel fin 1kg", value: 30 },
-];
-
-const weeklyOrders = [
-  { semaine: "S1", commandes: 45 }, { semaine: "S2", commandes: 52 }, { semaine: "S3", commandes: 48 }, { semaine: "S4", commandes: 61 },
-];
+function rangeStart(range: DateRangePreset): Date {
+  const d = new Date();
+  if (range === "day") d.setHours(0, 0, 0, 0);
+  else if (range === "week") d.setDate(d.getDate() - 7);
+  else if (range === "month") d.setMonth(d.getMonth() - 1);
+  else if (range === "year") d.setFullYear(d.getFullYear() - 1);
+  else d.setFullYear(d.getFullYear() - 10);
+  return d;
+}
 
 export default function CommercialDashboard() {
   const { t } = useTranslation();
   const [range, setRange] = useState<DateRangePreset>("month");
-  const filteredWeeklyOrders = useMemo(() => {
-    if (range === "day") return weeklyOrders.slice(-1);
-    if (range === "week") return weeklyOrders.slice(-1);
-    if (range === "month") return weeklyOrders;
-    if (range === "year") return weeklyOrders;
-    return weeklyOrders;
-  }, [range]);
+
+  const { data: orders = [] } = useOrders();
+  const { data: invoices = [] } = useInvoices();
+  const { data: clients = [] } = useClients();
+  const { data: topItems = [] } = useQuery({
+    queryKey: ["dashboard-top-products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("order_items")
+        .select("quantity, products(name)")
+        .limit(1000);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const start = useMemo(() => rangeStart(range), [range]);
+
+  const filteredOrders = useMemo(
+    () => orders.filter((o: any) => new Date(o.created_at) >= start),
+    [orders, start]
+  );
+
+  const todayStart = useMemo(() => {
+    const d = new Date(); d.setHours(0, 0, 0, 0); return d;
+  }, []);
+  const dailyOrdersCount = orders.filter((o: any) => new Date(o.created_at) >= todayStart).length;
+
+  const monthStart = useMemo(() => {
+    const d = new Date(); d.setDate(1); d.setHours(0, 0, 0, 0); return d;
+  }, []);
+  const monthlyRevenue = invoices
+    .filter((i: any) => i.status === "paye" && new Date(i.paid_at ?? i.created_at) >= monthStart)
+    .reduce((s: number, i: any) => s + Number(i.amount_paid || 0), 0);
+
+  const unpaidInvoices = invoices.filter((i: any) => i.status !== "paye").length;
+  const activeClients = clients.length;
+
+  const weeklyOrders = useMemo(() => {
+    const buckets = new Map<string, number>();
+    filteredOrders.forEach((o: any) => {
+      const d = new Date(o.created_at);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      buckets.set(key, (buckets.get(key) ?? 0) + 1);
+    });
+    return Array.from(buckets.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => ({ semaine: k.slice(5), commandes: v }));
+  }, [filteredOrders]);
+
+  const topProducts = useMemo(() => {
+    const map = new Map<string, number>();
+    (topItems as any[]).forEach((it) => {
+      const name = it.products?.name ?? "—";
+      map.set(name, (map.get(name) ?? 0) + Number(it.quantity || 0));
+    });
+    return Array.from(map.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name, value]) => ({ name, value }));
+  }, [topItems]);
+
+  const fmt = (n: number) => `${n.toLocaleString("fr-FR")} ${CURRENCY}`;
   const kpis = [
-    { label: t("dashboard.daily_orders"), value: "23", icon: ShoppingCart, color: "text-primary" },
-    { label: t("dashboard.monthly_revenue"), value: `12 450 000 ${CURRENCY}`, icon: TrendingUp, color: "text-success" },
-    { label: t("reporting.unpaid_invoices"), value: "8", icon: FileText, color: "text-destructive" },
-    { label: t("dashboard.active_clients"), value: "47", icon: Users, color: "text-primary" },
+    { label: t("dashboard.daily_orders"), value: String(dailyOrdersCount), icon: ShoppingCart, color: "text-primary" },
+    { label: t("dashboard.monthly_revenue"), value: fmt(monthlyRevenue), icon: TrendingUp, color: "text-success" },
+    { label: t("reporting.unpaid_invoices"), value: String(unpaidInvoices), icon: FileText, color: "text-destructive" },
+    { label: t("dashboard.active_clients"), value: String(activeClients), icon: Users, color: "text-primary" },
   ];
 
   return (
@@ -57,7 +119,7 @@ export default function CommercialDashboard() {
           <CardContent className="pt-6">
             <p className="text-sm font-heading font-semibold mb-4">{t("dashboard.weekly_orders")}</p>
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={filteredWeeklyOrders}>
+              <BarChart data={weeklyOrders}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="semaine" tick={{ fill: 'hsl(215, 16%, 47%)' }} />
                 <YAxis tick={{ fill: 'hsl(215, 16%, 47%)' }} />
