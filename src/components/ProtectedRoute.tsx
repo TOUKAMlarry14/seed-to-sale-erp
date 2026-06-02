@@ -1,8 +1,15 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import type { AppRole } from "@/lib/constants";
 
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth();
+export function ProtectedRoute({
+  children,
+  requiredRoles,
+}: {
+  children: React.ReactNode;
+  requiredRoles?: AppRole[];
+}) {
+  const { session, loading, roles } = useAuth();
 
   if (loading) {
     return (
@@ -14,6 +21,12 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!session) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requiredRoles && requiredRoles.length > 0) {
+    const isSuper = roles.includes("admin") || roles.includes("techadmin" as AppRole);
+    const allowed = isSuper || requiredRoles.some((r) => roles.includes(r));
+    if (!allowed) return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
