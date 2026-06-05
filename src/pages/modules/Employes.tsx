@@ -18,6 +18,7 @@ import { Plus, Pencil, Loader2, Trash2, Eye, PlusCircle, Power, Upload } from "l
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
+import { RoleGuard } from "@/hooks/useHasRole";
 
 const DEPARTMENTS = ["Direction", "Commercial", "Logistique", "Finance", "RH", "Livraison"];
 const ROLES = ["admin", "commercial", "logistique", "financier", "rh", "livreur"];
@@ -199,7 +200,9 @@ export function Employes() {
             <Button variant="ghost" size="icon" title={r.is_active ? t("employees.status_active") : t("employees.status_suspended")} onClick={() => updateEmployee.mutate({ id: r.id, is_active: !r.is_active } as any)}>
               <Power className={`h-3.5 w-3.5 ${r.is_active ? "text-success" : "text-muted-foreground"}`} />
             </Button>
-            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => setDeleteTarget(r)}><Trash2 className="h-3.5 w-3.5" /></Button>
+            <RoleGuard roles={["admin"]}>
+              <Button variant="ghost" size="icon" className="text-destructive" onClick={() => setDeleteTarget(r)}><Trash2 className="h-3.5 w-3.5" /></Button>
+            </RoleGuard>
           </div>
         )},
       ]} />

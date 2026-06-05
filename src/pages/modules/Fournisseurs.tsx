@@ -11,6 +11,7 @@ import { Plus, Pencil, Loader2, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
+import { RoleGuard } from "@/hooks/useHasRole";
 
 export function Fournisseurs() {
   const { data: suppliers, isLoading } = useSuppliers();
@@ -99,7 +100,9 @@ export function Fournisseurs() {
         { key: "actions", label: "", render: (r) => (
           <div className="flex gap-1">
             <Button variant="ghost" size="icon" onClick={() => openEdit(r)}><Pencil className="h-3.5 w-3.5" /></Button>
-            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => setDeleteTarget(r)}><Trash2 className="h-3.5 w-3.5" /></Button>
+            <RoleGuard roles={["admin"]}>
+              <Button variant="ghost" size="icon" className="text-destructive" onClick={() => setDeleteTarget(r)}><Trash2 className="h-3.5 w-3.5" /></Button>
+            </RoleGuard>
           </div>
         )},
       ]} />

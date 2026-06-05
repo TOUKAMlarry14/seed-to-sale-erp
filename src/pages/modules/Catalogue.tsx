@@ -15,6 +15,7 @@ import {
 import { PRODUCT_CATEGORIES, PRODUCT_UNITS, CURRENCY } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Loader2, Trash2 } from "lucide-react";
+import { RoleGuard } from "@/hooks/useHasRole";
 
 export function Catalogue() {
   const { data: products, isLoading } = useProducts();
@@ -176,12 +177,14 @@ export function Catalogue() {
           { key: "actions", label: "", render: (r) => (
             <div className="flex gap-1">
               <Button variant="ghost" size="icon" onClick={() => openEdit(r)} title="Modifier"><Pencil className="h-3.5 w-3.5" /></Button>
-              <Button
-                variant="ghost" size="icon"
-                onClick={() => setConfirmDelete({ ids: [r.id], label: r.name })}
-                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                title="Supprimer"
-              ><Trash2 className="h-3.5 w-3.5" /></Button>
+              <RoleGuard roles={["admin"]}>
+                <Button
+                  variant="ghost" size="icon"
+                  onClick={() => setConfirmDelete({ ids: [r.id], label: r.name })}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  title="Supprimer"
+                ><Trash2 className="h-3.5 w-3.5" /></Button>
+              </RoleGuard>
             </div>
           )},
         ]}
