@@ -5,7 +5,9 @@ export function exportToCSV(data: Record<string, any>[], columns: { key: string;
   const header = columns.map(c => c.label).join(",");
   const rows = data.map(row =>
     columns.map(c => {
-      const val = String(row[c.key] ?? "").replace(/"/g, '""');
+      let raw = String(row[c.key] ?? "");
+      if (/^[=+\-@\t\r]/.test(raw) && !/^-?\d+([.,]\d+)?$/.test(raw)) raw = "'" + raw;
+      const val = raw.replace(/"/g, '""');
       return `"${val}"`;
     }).join(",")
   );
