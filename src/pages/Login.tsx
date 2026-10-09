@@ -1,3 +1,4 @@
+import { LegalFooter } from "@/pages/Legal";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -218,7 +219,7 @@ const Login = () => {
             )}
           </form>
 
-          <p className="text-center text-[10px] text-muted-foreground/60">© 2026 AgroConnect SARL — Douala, Cameroun</p>
+          <LegalFooter />
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { hasConsent } from "@/components/CookieBanner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -46,7 +47,7 @@ export function OnboardingTour() {
 
   const finish = () => {
     setIsOpen(false);
-    localStorage.setItem(TOUR_KEY, "true");
+    if (hasConsent()) localStorage.setItem(TOUR_KEY, "true");
   };
 
   const next = () => step < steps.length - 1 ? setStep(step + 1) : finish();

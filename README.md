@@ -31,7 +31,7 @@ Tous les montants sont en **FCFA** (Franc CFA).
 ## Comptes de test
 | Rôle | Email | Mot de passe |
 |------|-------|-------------|
-| Admin | admin@agroconnect.cm | Admin2026! |
+| Admin | admin@agroconnect.cm | (mot de passe généré par seed-users, non versionné) |
 | TechAdmin | techadmin@agroconnect.cm | AdminTech2026! |
 | Commercial (chef) | chef.commercial@agroconnect.cm | Chef2026! |
 | Logistique (chef) | chef.logistique@agroconnect.cm | Chef2026! |
