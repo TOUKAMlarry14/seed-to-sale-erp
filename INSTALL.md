@@ -46,7 +46,7 @@ Les Edge Functions dans `supabase/functions/` sont déployées automatiquement p
 
 ### 9. Vérifier
 - Accéder à l'app
-- Se connecter avec admin@agroconnect.cm / Admin2026!
+- Se connecter avec admin@agroconnect.cm et le mot de passe renvoyé par seed-users
 - Tester les modules
 
 ## Structure des fichiers clés
