@@ -15,6 +15,8 @@ import Login from "@/pages/Login";
 import ResetPassword from "@/pages/ResetPassword";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/NotFound";
+import { MentionsLegales, Confidentialite } from "@/pages/Legal";
+import { CookieBanner } from "@/components/CookieBanner";
 import {
   Catalogue, Clients, Commandes, Factures, Inventaire, Fournisseurs,
   Livraisons, Transactions, Reporting, Employes, Presences, Paie, Management,
@@ -44,6 +46,8 @@ const App = () => {
                 <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/mentions-legales" element={<MentionsLegales />} />
+                  <Route path="/confidentialite" element={<Confidentialite />} />
                   <Route
                     element={
                       <ProtectedRoute>
@@ -73,6 +77,7 @@ const App = () => {
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                <CookieBanner />
               </AuthProvider>
             </BrowserRouter>
           </TooltipProvider>

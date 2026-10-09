@@ -10,6 +10,7 @@ import { useTranslation } from "@/contexts/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, Globe } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { LegalFooter } from "@/pages/Legal";
 
 export function AppLayout() {
   const { profile, roles } = useAuth();
@@ -58,6 +59,7 @@ export function AppLayout() {
           </header>
           <main className="flex-1 overflow-auto p-4 md:p-6 pb-20">
             <Outlet />
+            <LegalFooter />
           </main>
         </div>
       </div>

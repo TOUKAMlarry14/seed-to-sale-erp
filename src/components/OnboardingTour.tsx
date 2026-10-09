@@ -46,7 +46,7 @@ export function OnboardingTour() {
 
   const finish = () => {
     setIsOpen(false);
-    localStorage.setItem(TOUR_KEY, "true");
+    if (hasConsent()) localStorage.setItem(TOUR_KEY, "true");
   };
 
   const next = () => step < steps.length - 1 ? setStep(step + 1) : finish();
