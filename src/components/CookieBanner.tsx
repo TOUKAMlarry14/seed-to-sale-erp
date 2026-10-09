@@ -25,7 +25,7 @@ export function CookieBanner() {
 
   const choose = (value: "accepted" | "refused") => {
     localStorage.setItem(KEY, JSON.stringify({ value, at: Date.now() }));
-    if (value === "refused") localStorage.removeItem("agroconnect-tour-done");
+    if (value === "refused") localStorage.removeItem("agroconnect-tour-completed");
     setOpen(false);
   };
 

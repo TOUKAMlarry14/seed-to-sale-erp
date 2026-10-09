@@ -102,7 +102,7 @@ export function Confidentialite() {
       <ul>
         <li><code>sb-…-auth-token</code> — session de connexion (nécessaire, durée de la session).</li>
         <li><code>agroconnect-theme</code>, <code>agroconnect-lang</code> — vos préférences d'affichage (nécessaires).</li>
-        <li><code>agroconnect-tour-done</code> — mémorise la visite guidée (fonctionnel, soumis à consentement).</li>
+        <li><code>agroconnect-tour-completed</code> — mémorise la visite guidée (fonctionnel, soumis à consentement).</li>
         <li><code>agroconnect-cookie-consent</code> — mémorise votre choix (nécessaire, 6 mois).</li>
       </ul>
       <p><button onClick={reopenCookieBanner} className="underline">Modifier mes choix de cookies</button></p>
