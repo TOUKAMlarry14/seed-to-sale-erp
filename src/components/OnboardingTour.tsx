@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { hasConsent } from "@/components/CookieBanner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
