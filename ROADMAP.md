@@ -102,3 +102,5 @@
 6. **Mobile app** — React Native avec même backend
 7. **BI avancé** — Tableau de bord exécutif avec prédictions ML
 8. **Workflow automation** — Règles métier configurable (ex: commande > 1M FCFA → approbation directeur)
+
+- Security: decide/restrict who can read products and product categories.
